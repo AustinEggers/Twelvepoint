@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vendor List — TwelvePoint Agent Portal</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/portal.css">
+</head>
+
+<!-- ==========================================================================
+     AGENT — VENDOR LIST
+
+     Deliberately EMPTY of names.
+
+     Point nine of the standard says the network is vetted, and clients are
+     told these are people the team has used. Inventing plausible-looking
+     roofers and inspectors to fill the page would put a made-up number in
+     front of a client at the moment they most need a real one. The
+     categories are scaffolding; the names have to come from Austin.
+     ========================================================================== -->
+
+<body class="portalbody">
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="app" data-portal-page>
+
+  <nav class="rail" aria-label="Portal">
+    <a class="rail__brand" href="/index.html" aria-label="TwelvePoint Realty Group — home">
+      <img src="/assets/mark-cream.png" width="648" height="112" alt="TwelvePoint Realty Group">
+    </a>
+    <div class="rail__nav">
+      <a href="/portal/agent/">Transactions</a>
+      <a href="/portal/agent/contracts.html">Contracts</a>
+      <a href="/portal/agent/marketing.html">Marketing</a>
+      <a href="/portal/agent/vendors.html" aria-current="page">Vendor List</a>
+      <a href="/portal/agent/team.html" data-admin-only hidden>Team</a>
+      <a href="/portal/agent/leads.html" data-staff-only hidden>Leads</a>
+    </div>
+    <div class="rail__foot">
+      <span class="rail__who">
+        <span class="rail__role" data-portal-rolelabel>Agent</span>
+        <span class="rail__name" data-portal-name></span>
+      </span>
+      <button class="rail__out" type="button" data-portal-logout>Log Out</button>
+    </div>
+  </nav>
+
+  <main class="appmain" id="main">
+    <div class="panel">
+      <h1 class="panel__title">Vendor List</h1>
+      <p class="panel__count">Point nine &mdash; vetted vendor network</p>
+
+      <p class="note">
+        <strong>Only people the team has actually used.</strong> Clients are told
+        this network is vetted, and they call these numbers at the worst
+        moment of a transaction. A name nobody has worked with does more
+        damage here than an empty list.
+      </p>
+
+      <div class="contacts mt-l">
+        <div class="contact">
+          <p class="contact__role">Inspectors</p>
+          <div class="contact__body"><p class="contact__where">TREC-licensed. The one you would send your own family to.</p></div>
+        </div>
+        <div class="contact">
+          <p class="contact__role">Photographers</p>
+          <div class="contact__body"><p class="contact__where">Stills, aerial, and video. Point two and point eight depend on this.</p></div>
+        </div>
+        <div class="contact">
+          <p class="contact__role">Stagers</p>
+          <div class="contact__body"><p class="contact__where">Consultation and full staging, with rough pricing for each.</p></div>
+        </div>
+        <div class="contact">
+          <p class="contact__role">Foundation</p>
+          <div class="contact__body"><p class="contact__where">Engineer reports and repair. Houston clay makes this the most-called category.</p></div>
+        </div>
+        <div class="contact">
+          <p class="contact__role">Roofing</p>
+          <div class="contact__body"><p class="contact__where">Inspection, repair, and insurance-claim experience.</p></div>
+        </div>
+        <div class="contact">
+          <p class="contact__role">HVAC &amp; plumbing</p>
+          <div class="contact__body"><p class="contact__where">Fast enough to fit inside an option period.</p></div>
+        </div>
+        <div class="contact">
+          <p class="contact__role">Lenders</p>
+          <div class="contact__body"><p class="contact__where">At least two, so a buyer can compare. Never only one.</p></div>
+        </div>
+        <div class="contact">
+          <p class="contact__role">Title &amp; survey</p>
+          <div class="contact__body"><p class="contact__where">Surveyors who turn work around quickly.</p></div>
+        </div>
+        <div class="contact">
+          <p class="contact__role">Cleaners &amp; make-ready</p>
+          <div class="contact__body"><p class="contact__where">Pre-photo and pre-closing.</p></div>
+        </div>
+      </div>
+
+      <p class="note mt-l">
+        <strong>A note on referrals.</strong> Under RESPA you cannot accept
+        anything of value for sending a client to a settlement service provider
+        &mdash; lenders, title, and insurance especially. Recommend on merit,
+        keep more than one name per category, and be plain with clients that the
+        choice is theirs.
+      </p>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/assets/supabase-config.js"></script>
+<script src="/assets/portal.js"></script>
+</body>
+</html>

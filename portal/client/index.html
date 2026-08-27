@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Transactions — TwelvePoint Realty Group</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/portal.css">
+</head>
+
+<!-- ==========================================================================
+     MY TRANSACTIONS — the client's landing page after sign-in.
+
+     Reaching this means netlify/edge-functions/portal-gate.js verified a
+     Supabase token carrying the client role.
+
+     Every row is rendered from the database by portal.js. The query sends
+     no client id: Row Level Security resolves auth.uid() and returns only
+     this person's files. Nothing client-specific is written into this
+     file, and nothing ever should be.
+     ========================================================================== -->
+
+<body class="portalbody">
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="app" data-portal-page>
+
+  <nav class="rail" aria-label="Portal">
+    <a class="rail__brand" href="/index.html" aria-label="TwelvePoint Realty Group — home">
+      <img src="/assets/mark-cream.png" width="648" height="112" alt="TwelvePoint Realty Group">
+    </a>
+    <div class="rail__nav">
+      <a href="/portal/client/" aria-current="page">My Transactions</a>
+      <a href="/index.html#contact">Contact Us</a>
+    </div>
+    <div class="rail__foot">
+      <span class="rail__who">
+        <span class="rail__role">Client</span>
+        <span class="rail__name" data-portal-name></span>
+      </span>
+      <button class="rail__out" type="button" data-portal-logout>Log Out</button>
+    </div>
+  </nav>
+
+  <main class="appmain" id="main">
+    <div class="panel">
+      <h1 class="panel__title">My Transactions</h1>
+      <p class="panel__count" data-txn-count></p>
+
+      <div data-txn-list>
+        <p class="skeleton">Loading…</p>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/assets/supabase-config.js"></script>
+<script src="/assets/portal.js"></script>
+</body>
+</html>

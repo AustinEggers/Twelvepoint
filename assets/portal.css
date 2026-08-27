@@ -1,0 +1,746 @@
+/* =====================================================================
+   portal.css — the signed-in application surface.
+
+   Loaded after site.css, and only by pages under /portal/. The marketing
+   site is a brochure; this is a tool someone opens to answer "where is my
+   closing". So it borrows the site's palette and type and almost nothing
+   else: no full-bleed heroes, no scroll reveals, no parallax.
+
+   The layout follows the transaction-portal convention buyers already
+   know from title company software — persistent left rail, a list of
+   files, and a tabbed detail view. Familiarity is the feature here.
+   ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* shell                                                               */
+/* ------------------------------------------------------------------ */
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 15rem 1fr;
+  background: var(--paper-warm);
+}
+@media (max-width: 52rem) {
+  .app { grid-template-columns: 1fr; }
+}
+
+/* ---- left rail ---- */
+.rail {
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  flex-direction: column;
+  padding: 1.4rem 0;
+}
+.rail__brand {
+  display: block;
+  padding: 0 1.3rem 1.6rem;
+}
+.rail__brand img { width: 100%; max-width: 10.5rem; height: auto; display: block; }
+
+.rail__nav { display: flex; flex-direction: column; }
+.rail__nav a {
+  display: block;
+  padding: .8rem 1.3rem;
+  color: color-mix(in srgb, var(--paper) 78%, var(--stone));
+  text-decoration: none;
+  font-size: .95rem;
+  border-left: 3px solid transparent;
+}
+.rail__nav a:hover { color: var(--paper); background: color-mix(in srgb, var(--paper) 5%, transparent); }
+.rail__nav a[aria-current="page"] {
+  color: var(--paper);
+  border-left-color: var(--gold);
+  background: color-mix(in srgb, var(--paper) 7%, transparent);
+}
+
+/* Pushed to the bottom of the rail, away from navigation, so signing out
+   is never a mis-click on the way to another page. */
+.rail__foot { margin-top: auto; padding: 1.2rem 1.3rem 0; border-top: var(--rule-dk); }
+.rail__who { display: block; margin-bottom: .7rem; line-height: 1.35; }
+.rail__role {
+  display: block;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .2em; text-transform: uppercase; color: var(--gold-lit);
+}
+.rail__name {
+  display: block; font-size: .85rem;
+  color: var(--stone);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rail__out {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--stone); text-decoration: underline; text-underline-offset: 3px;
+}
+.rail__out:hover { color: var(--paper); }
+
+@media (max-width: 52rem) {
+  .rail { flex-direction: row; align-items: center; flex-wrap: wrap; gap: .5rem 1rem; padding: .8rem 1rem; }
+  .rail__brand { padding: 0; flex: 0 0 auto; }
+  .rail__brand img { max-width: 8rem; }
+  .rail__nav { flex-direction: row; flex: 1 1 auto; }
+  .rail__nav a { padding: .4rem .7rem; border-left: 0; border-bottom: 2px solid transparent; }
+  .rail__nav a[aria-current="page"] { border-left: 0; border-bottom-color: var(--gold); background: none; }
+  .rail__foot { margin: 0; padding: 0; border: 0; display: flex; align-items: center; gap: .9rem; }
+  .rail__who { margin: 0; }
+  .rail__name { display: none; }
+}
+
+/* ---- main ---- */
+.appmain { padding: clamp(1.2rem, 3vw, 2.4rem); min-width: 0; }
+.panel {
+  background: var(--paper);
+  border: var(--rule);
+  padding: clamp(1.3rem, 3vw, 2.2rem);
+}
+.panel__title {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  line-height: 1.1; margin: 0 0 .3rem;
+}
+.panel__count {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .16em; text-transform: uppercase; color: var(--stone-dim);
+  margin: 0 0 1.6rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* transaction list                                                    */
+/* ------------------------------------------------------------------ */
+.txnlist { display: flex; flex-direction: column; }
+.txn {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .6rem 1.5rem;
+  align-items: start;
+  padding: 1.2rem 0;
+  border-top: var(--rule);
+}
+.txn:last-child { border-bottom: var(--rule); }
+
+.txn__file {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .14em; color: var(--gold-deep);
+  text-decoration: none; border-bottom: 1px solid currentColor;
+}
+.txn__addr {
+  display: block; margin-top: .35rem;
+  font-family: var(--display); font-size: clamp(1.15rem, 2vw, 1.45rem);
+  line-height: 1.25; color: var(--ink); text-decoration: none;
+}
+.txn__addr:hover { color: var(--gold-deep); }
+
+.txn__right { text-align: right; }
+.txn__date {
+  display: block; margin-top: .45rem;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .1em; color: var(--stone-dim);
+}
+
+/* ---- milestone strip ---- */
+.ms {
+  grid-column: 1 / -1;
+  display: flex; flex-wrap: wrap;
+  gap: .4rem clamp(1rem, 3.5vw, 2.6rem);
+  margin-top: .9rem;
+  list-style: none; padding: 0;
+}
+.ms__item { display: flex; flex-direction: column; align-items: center; gap: .35rem; min-width: 4.2rem; }
+.ms__dot {
+  width: 1.55rem; height: 1.55rem; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--data); font-size: .62rem; font-weight: 500;
+  border: 1px solid transparent;
+}
+.ms__label {
+  font-family: var(--data); font-size: .58rem;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: var(--stone-dim); text-align: center; line-height: 1.3;
+}
+
+/* Colour is never the only signal — each state also carries a distinct
+   glyph, so the strip still reads for a colour-blind buyer or in print. */
+.ms__dot--complete { background: #4B7B4A; color: var(--paper); }
+.ms__dot--blocked  { background: #9E3B30; color: var(--paper); }
+.ms__dot--na       { background: color-mix(in srgb, var(--stone-dim) 22%, transparent); color: var(--stone-dim); }
+.ms__dot--pending  { background: transparent; border-color: color-mix(in srgb, var(--gold) 40%, transparent); color: var(--gold-deep); }
+
+/* ---- status pill ---- */
+.pill {
+  display: inline-block;
+  padding: .34rem .95rem;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .14em; text-transform: uppercase;
+  border-radius: 999px; white-space: nowrap;
+}
+.pill--open   { background: var(--gold); color: var(--paper); }
+.pill--closed { background: var(--ink); color: var(--paper); }
+.pill--quiet  { background: color-mix(in srgb, var(--stone-dim) 18%, transparent); color: var(--ink); }
+.pill--good   { background: color-mix(in srgb, #4B7B4A 20%, transparent); color: #2F5A2E; }
+
+/* ------------------------------------------------------------------ */
+/* transaction detail                                                  */
+/* ------------------------------------------------------------------ */
+.dtl__back {
+  display: inline-block; margin-bottom: .5rem;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--gold-deep); text-decoration: none;
+}
+.dtl__back:hover { text-decoration: underline; text-underline-offset: 3px; }
+.dtl__addr {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  line-height: 1.12; margin: 0 0 1.2rem;
+}
+
+.tabs {
+  display: flex; gap: clamp(1.2rem, 3vw, 2.2rem);
+  border-bottom: var(--rule);
+  margin-bottom: 1.8rem;
+  overflow-x: auto;
+}
+.tabs__tab {
+  background: none; border: 0; cursor: pointer;
+  padding: .6rem 0 .7rem;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--stone-dim);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.tabs__tab:hover { color: var(--ink); }
+.tabs__tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold); }
+.tabpanel[hidden] { display: none; }
+
+/* ---- progress tracker ---- */
+.prog__status {
+  text-align: center; margin: 0 0 1.6rem;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .16em; text-transform: uppercase; color: var(--stone-dim);
+}
+.prog__status b { display: block; margin-top: .3rem;
+  font-family: var(--display); font-size: 1.35rem; font-weight: 400;
+  letter-spacing: 0; text-transform: none; color: var(--ink); }
+
+.prog {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  list-style: none; margin: 0 0 2rem; padding: 0;
+}
+.prog__step { position: relative; text-align: center; padding-top: .2rem; }
+/* The connector is drawn from each step toward the previous one, so the
+   first step has none and the line never overhangs either end. */
+.prog__step + .prog__step::before {
+  content: ""; position: absolute; top: 1.1rem; right: 50%; left: -50%;
+  height: 1px; background: color-mix(in srgb, var(--gold) 30%, transparent);
+}
+.prog__n {
+  position: relative; z-index: 1;
+  width: 2.2rem; height: 2.2rem; margin: 0 auto .5rem;
+  border-radius: 50%; display: grid; place-items: center;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  font-family: var(--data); font-size: .8rem; color: var(--stone-dim);
+}
+.prog__step--done .prog__n { background: var(--gold); border-color: var(--gold); color: var(--paper); }
+.prog__step--now  .prog__n { border-color: var(--gold); border-width: 2px; color: var(--gold-deep); font-weight: 500; }
+.prog__label {
+  font-family: var(--data); font-size: .6rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  line-height: 1.4; color: var(--stone-dim);
+}
+.prog__step--now .prog__label { color: var(--ink); }
+
+.actions {
+  background: color-mix(in srgb, var(--paper-warm) 70%, transparent);
+  border-left: 3px solid var(--gold);
+  padding: 1.1rem 1.3rem;
+  max-width: 46rem; margin: 0 auto;
+}
+.actions h3 {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--gold-deep); margin: 0 0 .6rem; font-weight: 500;
+}
+.actions ul { margin: 0; padding-left: 1.1rem; }
+.actions li { margin-bottom: .35rem; color: var(--ink); }
+
+/* ---- contacts ---- */
+.contacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: 1rem;
+}
+.contact { border: var(--rule); background: var(--paper); }
+.contact__role {
+  margin: 0; padding: .6rem .95rem;
+  border-bottom: var(--rule);
+  font-family: var(--data); font-size: .6rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--ink);
+}
+.contact__body { padding: .95rem; }
+.contact__body p { margin: 0 0 .25rem; font-size: .92rem; line-height: 1.5; }
+.contact__co { font-family: var(--display); font-size: 1.05rem; }
+.contact__where { color: var(--stone-dim); font-size: .85rem; margin-top: .5rem; }
+.contact a { color: var(--gold-deep); }
+
+/* ---- documents ---- */
+.docs { width: 100%; border-collapse: collapse; }
+.docs th {
+  text-align: left; padding: .55rem .8rem;
+  border-bottom: var(--rule);
+  font-family: var(--data); font-size: .6rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--stone-dim); font-weight: 500;
+}
+.docs td { padding: .8rem; border-bottom: var(--rule); vertical-align: middle; }
+.docs tr:nth-child(even) td { background: color-mix(in srgb, var(--paper-warm) 45%, transparent); }
+.docs__name { color: var(--ink); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); }
+.docs__name:hover { color: var(--gold-deep); }
+.docs__date { font-family: var(--data); font-size: var(--t-micro); letter-spacing: .08em; color: var(--stone-dim); white-space: nowrap; }
+.docwrap { overflow-x: auto; }
+
+/* ---- messages ---- */
+.msgs { display: flex; flex-direction: column; gap: .9rem; margin-bottom: 1.4rem; }
+.msg { border: var(--rule); padding: .9rem 1.1rem; background: var(--paper); }
+.msg--mine { background: color-mix(in srgb, var(--paper-warm) 60%, transparent); }
+.msg__meta {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--stone-dim);
+  margin: 0 0 .4rem;
+}
+.msg__body { margin: 0; white-space: pre-wrap; line-height: 1.6; }
+
+.msgform textarea {
+  width: 100%; min-height: 7rem; resize: vertical;
+  padding: .8rem; font: inherit; font-size: .95rem;
+  border: var(--rule); background: var(--paper); color: var(--ink);
+}
+.msgform__actions { display: flex; justify-content: flex-end; gap: .8rem; margin-top: .8rem; align-items: center; }
+
+/* ---- shared states ---- */
+.empty {
+  padding: 2.2rem 1.2rem; text-align: center;
+  color: var(--stone-dim); border: 1px dashed color-mix(in srgb, var(--gold) 30%, transparent);
+}
+.empty h3 { font-family: var(--display); font-weight: 400; font-size: 1.2rem; color: var(--ink); margin: 0 0 .4rem; }
+.empty p { margin: 0; font-size: .92rem; }
+
+.note {
+  padding: .75rem .95rem;
+  border-left: 3px solid var(--gold);
+  background: color-mix(in srgb, var(--paper-warm) 65%, transparent);
+  font-size: .92rem; line-height: 1.55; margin: 0 0 1rem;
+}
+.note--err { border-left-color: #9E3B30; background: color-mix(in srgb, #9E3B30 8%, transparent); }
+.note[hidden] { display: none; }
+
+.skeleton { color: var(--stone-dim); font-family: var(--data); font-size: var(--t-micro); letter-spacing: .14em; text-transform: uppercase; padding: 1.5rem 0; }
+
+/* Visually hidden but announced. The milestone strip needs this: the dot
+   carries a decorative glyph, and the real state ("Loan docs: needs
+   attention") is here for anyone not reading the colour. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* The portal shell owns the whole viewport, so the marketing body rules
+   (which assume a scrolling brochure page) are neutralised here. */
+.portalbody { margin: 0; background: var(--paper-warm); }
+
+/* ------------------------------------------------------------------ */
+/* phones                                                              */
+/* ------------------------------------------------------------------ */
+@media (max-width: 34rem) {
+  /* Address and status stop competing for one row — the address is the
+     thing being scanned, so it gets the full width. */
+  .txn { grid-template-columns: 1fr; }
+  .txn__right { text-align: left; }
+  .txn__date { display: inline; margin-left: .6rem; }
+
+  /* The milestone labels are wider than the dots, so the centred-column
+     layout wrapped into a ragged grid. Side by side in a single column
+     reads cleanly and keeps each label with its own marker. */
+  .ms { flex-direction: column; gap: .5rem; margin-top: 1rem; }
+  .ms__item { flex-direction: row; align-items: center; gap: .6rem; min-width: 0; }
+  .ms__label { text-align: left; }
+
+  .prog__label { font-size: .5rem; letter-spacing: .08em; }
+  .prog__n { width: 1.8rem; height: 1.8rem; font-size: .7rem; }
+  .prog__step + .prog__step::before { top: .9rem; }
+}
+
+/* Section heading inside a panel — smaller than the panel title, with a
+   rule that separates without shouting. */
+.sect {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  margin: clamp(2rem, 4vw, 2.8rem) 0 1rem;
+  padding-bottom: .5rem;
+  border-bottom: var(--rule);
+}
+.panel > .sect:first-of-type { margin-top: 1.6rem; }
+
+/* Colour swatches on the brand assets card. */
+.swatchrow { display: flex; align-items: center; gap: .6rem; }
+.swatch {
+  width: 1.1rem; height: 1.1rem; flex: 0 0 auto;
+  border-radius: 2px; display: inline-block;
+}
+
+/* With four sections the rail nav no longer fits on one phone line and was
+   wrapping mid-label ("Vendor / List"). One scrollable row keeps each label
+   whole and keeps the bar a predictable height. */
+@media (max-width: 52rem) {
+  .rail__nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .rail__nav::-webkit-scrollbar { display: none; }
+  .rail__nav a { white-space: nowrap; font-size: .88rem; }
+}
+
+/* Admin-only block inside the agent portal. Set apart just enough to read
+   as a different kind of thing — a control surface, not reference material. */
+.admin {
+  border: var(--rule);
+  border-left: 3px solid var(--gold);
+  background: color-mix(in srgb, var(--paper-warm) 45%, transparent);
+  padding: clamp(1.1rem, 2.5vw, 1.7rem);
+}
+.admin .sect { margin-top: 0; }
+.admin select, .admin input { background: var(--paper); }
+
+/* Whose file this is — staff view only. Sits under the address, quieter
+   than it but louder than the milestone labels. */
+.txn__client {
+  display: block; margin-top: .3rem;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .1em; color: var(--stone-dim);
+}
+
+/* Milestone editor — five little dropdowns that should read as one group. */
+.milestones { border: 0; padding: 0; margin: 0; }
+.milestones legend {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--stone-dim); padding: 0; margin-bottom: .6rem;
+}
+.milestones__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: .7rem;
+}
+.milestones__grid label {
+  display: flex; flex-direction: column; gap: .3rem;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--stone-dim);
+}
+.milestones__grid select { background: var(--paper); }
+.admin textarea { background: var(--paper); }
+
+/* =====================================================================
+   STAFF TRANSACTION DASHBOARD
+   Denser than the client view and built for scanning, but the same
+   palette and type. No blue, no gradients, no rounded SaaS cards.
+   ===================================================================== */
+
+/* Room for the sticky save bar. It sits IN the layout, not over it, so
+   the last field on the page is never covered. */
+.appmain--sticky { padding-bottom: 5.5rem; }
+
+.tcard {
+  background: var(--paper);
+  border: var(--rule);
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+  margin-bottom: clamp(.8rem, 1.8vw, 1.2rem);
+}
+.tcard__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+  margin-bottom: 1rem; padding-bottom: .6rem;
+  border-bottom: var(--rule);
+}
+.tcard__title {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.15rem, 2vw, 1.4rem); margin: 0; line-height: 1.2;
+}
+.tcard--attention { background: color-mix(in srgb, var(--paper-warm) 50%, transparent); }
+
+/* Internal content is tinted and edged so it cannot be mistaken, at a
+   glance, for something the client sees. */
+.tcard--internal {
+  background: color-mix(in srgb, var(--ink) 4%, var(--paper));
+  border-left: 3px solid var(--ink);
+}
+
+/* ---- visibility tags ---- */
+.tag {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-family: var(--data); font-size: .58rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  padding: .25rem .6rem; white-space: nowrap;
+}
+.tag__i { width: .85em; height: .85em; flex: 0 0 auto; }
+.tag--client   { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold-deep); }
+.tag--internal { background: color-mix(in srgb, var(--ink) 12%, transparent); color: var(--ink); }
+
+/* ---- header ---- */
+.txhead {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap; margin: .4rem 0 1rem;
+}
+.txhead__main { min-width: 0; }
+.txhead .dtl__addr { margin: 0 0 .3rem; }
+.txhead__meta {
+  margin: 0; display: flex; gap: 1rem; flex-wrap: wrap;
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .12em; color: var(--stone-dim);
+}
+
+/* ---- clickable stage timeline ---- */
+.stages {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  list-style: none; margin: 0; padding: 0;
+}
+.stages li { position: relative; }
+.stages li + li::before {
+  content: ""; position: absolute; top: 1.15rem; right: 50%; left: -50%;
+  height: 1px; background: color-mix(in srgb, var(--gold) 28%, transparent);
+}
+.tstage {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: .45rem;
+  width: 100%; padding: .3rem .2rem;
+  background: none; border: 0; cursor: pointer; text-align: center;
+}
+.tstage__n {
+  width: 2.2rem; height: 2.2rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  font-family: var(--data); font-size: .8rem; color: var(--stone-dim);
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.tstage__label {
+  font-family: var(--data); font-size: .58rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  line-height: 1.35; color: var(--stone-dim);
+}
+.tstage:hover .tstage__n { border-color: var(--gold); }
+.tstage--done .tstage__n { background: var(--gold); border-color: var(--gold); color: var(--paper); }
+.tstage--now  .tstage__n { border-color: var(--gold); border-width: 2px; color: var(--gold-deep); font-weight: 500; }
+.tstage--now  .tstage__label { color: var(--ink); }
+.tstage:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* ---- needs attention ---- */
+.attn { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.attn__i { display: flex; align-items: flex-start; gap: .6rem; font-size: .93rem; line-height: 1.5; }
+.attn__dot { width: .5rem; height: .5rem; border-radius: 50%; margin-top: .45rem; flex: 0 0 auto; }
+
+/* Red is reserved for genuinely overdue or blocked. Everything else is
+   amber, so the page never shouts about routine work. */
+.attn__i--bad  .attn__dot { background: #9E3B30; }
+.attn__i--warn .attn__dot { background: var(--gold); }
+.attn__none { color: var(--stone-dim); font-size: .93rem; }
+
+/* ---- two-column shell ---- */
+.cols { display: grid; gap: clamp(.8rem, 1.8vw, 1.2rem); }
+@media (min-width: 60rem) { .cols { grid-template-columns: 1fr 1fr; align-items: start; } }
+
+/* ---- fields ---- */
+.fgrid { display: grid; gap: .8rem; }
+@media (min-width: 34rem) { .fgrid { grid-template-columns: 1fr 1fr; } }
+.f { display: flex; flex-direction: column; gap: .3rem; margin: 0; }
+.f__label {
+  font-family: var(--data); font-size: .58rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--stone-dim);
+}
+
+/* One height for every control. Inputs that disagree by a pixel are why
+   forms look homemade. */
+.f__in {
+  font: inherit; font-size: .93rem;
+  padding: .5rem .6rem; height: 2.4rem;
+  border: var(--rule); background: var(--paper); color: var(--ink);
+  width: 100%; min-width: 0;
+}
+.f__in:focus-visible { outline: 2px solid var(--gold); outline-offset: -1px; }
+textarea.f__in { height: auto; line-height: 1.6; }
+.f--static .f__val { font-size: .93rem; padding: .5rem 0; }
+
+/* ---- dates ---- */
+.dates { display: grid; gap: .7rem; }
+@media (min-width: 40rem) { .dates { grid-template-columns: 1fr 1fr; } }
+.dt { display: grid; grid-template-columns: 1fr auto; gap: .25rem .7rem; align-items: center; }
+.dt .f__label { grid-column: 1 / -1; }
+.dt__flag {
+  font-family: var(--data); font-size: .58rem;
+  letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+}
+.dt__flag--bad  { color: #9E3B30; }
+.dt__flag--warn { color: var(--gold-deep); }
+.dt__flag--calm { color: var(--stone-dim); }
+
+/* ---- milestones: segmented pills, not dropdowns ---- */
+.miles { display: grid; gap: .45rem; }
+.mile {
+  display: grid; grid-template-columns: minmax(8rem, 1fr) auto;
+  gap: .5rem 1rem; align-items: center;
+  padding: .4rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 12%, transparent);
+}
+.mile:last-child { border-bottom: 0; }
+.mile__label { font-size: .93rem; }
+.mile__opts { display: flex; flex-wrap: wrap; gap: .25rem; }
+.milebtn {
+  font-family: var(--data); font-size: .56rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .35rem .55rem; cursor: pointer;
+  background: var(--paper); color: var(--stone-dim);
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, transparent);
+}
+.milebtn:hover { border-color: var(--gold); color: var(--ink); }
+.milebtn.is-on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.milebtn--complete.is-on { background: #4B7B4A; border-color: #4B7B4A; }
+.milebtn--blocked.is-on  { background: #9E3B30; border-color: #9E3B30; }
+
+/* A glyph as well as colour, so state survives a colour-blind reader. */
+.milebtn--complete.is-on::before { content: "\2713\00a0"; }
+.milebtn--blocked.is-on::before  { content: "!\00a0"; }
+@media (max-width: 44rem) { .mile { grid-template-columns: 1fr; } }
+
+/* ---- client action items ---- */
+.ai {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding: .6rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 12%, transparent);
+}
+.ai--done .ai__title { text-decoration: line-through; color: var(--stone-dim); }
+.ai__main { display: flex; flex-direction: column; gap: .2rem; min-width: 0; }
+.ai__title { font-size: .95rem; }
+.ai__meta {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .1em; color: var(--stone-dim);
+}
+.ai__acts { display: flex; gap: .4rem; flex: 0 0 auto; }
+.aiform { display: grid; grid-template-columns: 1fr auto auto; gap: .5rem; margin-top: .9rem; }
+@media (max-width: 40rem) { .aiform { grid-template-columns: 1fr; } }
+
+.upload { display: grid; grid-template-columns: 1fr auto; gap: .5rem; margin-top: 1rem; align-items: center; }
+.upload .field__hint { grid-column: 1 / -1; margin: 0; }
+@media (max-width: 40rem) { .upload { grid-template-columns: 1fr; } }
+
+.intnotes { min-height: 8rem; }
+
+/* ---- history ---- */
+.audit { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.audit__i {
+  display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  font-size: .88rem; padding-bottom: .5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 10%, transparent);
+}
+.audit__when {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .08em; color: var(--stone-dim); white-space: nowrap;
+}
+
+/* ---- sticky save bar ---- */
+.savebar {
+  position: sticky; bottom: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: flex-end; gap: 1rem;
+  grid-column: 1 / -1;
+  padding: .8rem clamp(1.2rem, 3vw, 2.4rem);
+  background: color-mix(in srgb, var(--paper) 96%, var(--ink));
+  border-top: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+}
+.savebar__state {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--stone-dim);
+}
+.savebar__state--err { color: #9E3B30; }
+@media (max-width: 34rem) {
+  .savebar { flex-direction: column; align-items: stretch; gap: .5rem; }
+  .savebar .btn { width: 100%; }
+}
+
+/* Client-side action items. Completed ones stay on the page, struck
+   through — a client who did the thing should see it landed. */
+.actions__done { color: var(--stone-dim); text-decoration: line-through; }
+.actions__meta { color: var(--stone-dim); font-size: .88em; }
+.actions__note { display: block; color: var(--stone-dim); font-size: .9em; margin-top: .15rem; }
+
+/* ---- leads inbox ---- */
+.leadfilters { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: 1.2rem; }
+
+.leadcard {
+  border: var(--rule);
+  background: var(--paper);
+  padding: clamp(.9rem, 2vw, 1.2rem);
+  margin-bottom: .7rem;
+}
+/* An unworked lead is the only thing on this page that should catch the
+   eye. Everything else is history. */
+.leadcard--new { border-left: 3px solid var(--gold); background: color-mix(in srgb, var(--paper-warm) 45%, transparent); }
+
+.leadcard__top {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap; margin-bottom: .35rem;
+}
+.leadcard__who { display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap; }
+.leadcard__name { font-family: var(--display); font-size: 1.15rem; }
+.leadcard__type {
+  font-family: var(--data); font-size: .56rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep);
+  background: color-mix(in srgb, var(--gold) 14%, transparent);
+  padding: .2rem .5rem;
+}
+.leadcard__when {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .08em; color: var(--stone-dim); white-space: nowrap;
+}
+.leadcard__contact { margin: 0 0 .4rem; font-size: .93rem; }
+.leadcard__contact a { color: var(--gold-deep); }
+.leadcard__facts { margin: 0 0 .4rem; font-size: .9rem; color: var(--stone-dim); }
+.leadcard__msg {
+  margin: .5rem 0; padding: .6rem .8rem; font-size: .93rem; line-height: 1.6;
+  border-left: 2px solid color-mix(in srgb, var(--gold) 25%, transparent);
+  background: color-mix(in srgb, var(--paper-warm) 40%, transparent);
+  white-space: pre-wrap;
+}
+.leadcard__extra {
+  display: grid; grid-template-columns: auto 1fr; gap: .2rem .8rem;
+  margin: .5rem 0 0; font-size: .85rem;
+}
+.leadcard__extra dt {
+  font-family: var(--data); font-size: .56rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--stone-dim);
+  align-self: center;
+}
+.leadcard__extra dd { margin: 0; }
+.leadcard__foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: .8rem; flex-wrap: wrap;
+  margin-top: .7rem; padding-top: .6rem;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 12%, transparent);
+}
+.leadcard__src {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .1em; color: var(--stone-dim);
+}
+/* A lead that saved but failed to alert must be visible as such, or a
+   provider outage looks like a quiet week. */
+.leadcard__warn {
+  font-family: var(--data); font-size: var(--t-micro);
+  letter-spacing: .1em; text-transform: uppercase; color: #9E3B30;
+}
+.leadcard__status {
+  font: inherit; font-size: .82rem; padding: .3rem .5rem;
+  border: var(--rule); background: var(--paper); color: var(--ink);
+}

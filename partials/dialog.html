@@ -1,0 +1,34 @@
+      <dialog class="modal" id="convo" aria-labelledby="convo-title">
+        <form method="dialog" class="modal__dismiss">
+          <button class="modal__close" value="cancel" aria-label="Close">&times;</button>
+        </form>
+        <div class="modal__body">
+          <p class="eyebrow">Get in touch</p>
+          <h2 class="modal__title" id="convo-title">Start a conversation</h2>
+          <p class="modal__note">Tell us how to reach you and whether you're buying or selling. We'll come back to you personally.</p>
+
+          <!-- TODO: point action= at your form handler before launch. -->
+          <form class="form form--two modal__form" action="#" method="post" data-form="conversation">
+            <input type="hidden" name="source" value="start a conversation">
+            <div class="field"><label for="cv-first">First name</label>
+              <input id="cv-first" name="first_name" type="text" autocomplete="given-name" required></div>
+            <div class="field"><label for="cv-last">Last name</label>
+              <input id="cv-last" name="last_name" type="text" autocomplete="family-name" required></div>
+            <div class="field"><label for="cv-phone">Phone</label>
+              <input id="cv-phone" name="phone" type="tel" autocomplete="tel" required></div>
+            <div class="field"><label for="cv-email">Email</label>
+              <input id="cv-email" name="email" type="email" autocomplete="email" required></div>
+            <div class="field form__full"><label for="cv-intent">Are you buying or selling?</label>
+              <select id="cv-intent" name="intent">
+                <option>Buying</option>
+                <option>Selling</option>
+                <option>Both &mdash; buying and selling</option>
+                <option>Not sure yet</option>
+              </select>
+            </div>
+            <div class="form__full modal__actions">
+              <button class="btn" type="submit">Send <span class="btn__arrow" aria-hidden="true">&rarr;</span></button>
+              <button class="btn btn--ghost" type="button" data-dialog-close>Cancel</button>
+            </div>          </form>
+        </div>
+      </dialog>

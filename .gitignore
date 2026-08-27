@@ -1,0 +1,36 @@
+# =====================================================================
+# What must never reach GitHub
+# =====================================================================
+
+# Secrets. There are none in this repo today — the publishable Supabase
+# key in assets/supabase-config.js is public by design — but any .env file
+# would hold the service role key, the Resend key and the Twilio token.
+.env
+.env.*
+!.env.example
+
+# Build output. Timestamped zips, one per build; they add megabytes and
+# tell you nothing a commit does not.
+dist/
+
+# Pristine copies of images kept before compression. Useful locally,
+# pointless in version control.
+assets/_originals/
+
+# Local previews with stubbed sample data. Excluded from deploys already;
+# excluded here too so nobody mistakes one for a real page.
+portal/_preview-*.html
+
+# Working files that live in the project ROOT but are not the website:
+# screenshots, reference images, and downloads with generated names. The
+# leading slash matters — it confines these to the root and leaves
+# assets/ alone, which is where the real images live.
+/*.jpg
+/*.jpeg
+/*.png
+/*.zip
+
+node_modules/
+.vercel/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Not useful in search results, and the templates would read as
+# duplicate/thin content against the real pages they seed.
+Disallow: /login.html
+Disallow: /blog-post-template.html
+Disallow: /listing-template.html
+
+Sitemap: https://twelvepointrealty.com/sitemap.xml

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transactions — TwelvePoint Agent Portal</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/portal.css">
+</head>
+
+<!-- ==========================================================================
+     AGENT — TRANSACTIONS
+
+     The same list component the client side uses, and deliberately the same
+     query: it sends no agent id. Row Level Security resolves auth.uid() and
+     returns the files assigned to whoever is asking. A client signing in
+     sees their own; an agent sees their book. One query, two answers,
+     decided by the database rather than by this page.
+     ========================================================================== -->
+
+<body class="portalbody">
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="app" data-portal-page>
+
+  <nav class="rail" aria-label="Portal">
+    <a class="rail__brand" href="/index.html" aria-label="TwelvePoint Realty Group — home">
+      <img src="/assets/mark-cream.png" width="648" height="112" alt="TwelvePoint Realty Group">
+    </a>
+    <div class="rail__nav">
+      <a href="/portal/agent/" aria-current="page">Transactions</a>
+      <a href="/portal/agent/contracts.html">Contracts</a>
+      <a href="/portal/agent/marketing.html">Marketing</a>
+      <a href="/portal/agent/vendors.html">Vendor List</a>
+      <a href="/portal/agent/team.html" data-admin-only hidden>Team</a>
+      <a href="/portal/agent/leads.html" data-staff-only hidden>Leads</a>
+    </div>
+    <div class="rail__foot">
+      <span class="rail__who">
+        <span class="rail__role" data-portal-rolelabel>Agent</span>
+        <span class="rail__name" data-portal-name></span>
+      </span>
+      <button class="rail__out" type="button" data-portal-logout>Log Out</button>
+    </div>
+  </nav>
+
+  <main class="appmain" id="main">
+    <div class="panel">
+      <h1 class="panel__title">Transactions</h1>
+      <p class="panel__count" data-txn-count></p>
+
+      <div data-txn-list>
+        <p class="skeleton">Loading…</p>
+      </div>
+
+      <!-- Agents and admins both. The client is named by email rather than
+           chosen from a list: a dropdown would mean letting every agent read
+           every profile in the brokerage, which is a bigger door than this
+           needs. The database function looks up that one address and refuses
+           if the caller is not staff. -->
+      <section class="admin mt-xl" data-staff-only hidden>
+        <h2 class="sect">New transaction</h2>
+        <p class="note">
+          The client needs an account first &mdash; they create one themselves
+          from the portal login. Once you add the file here, they will see it
+          the next time they sign in.
+        </p>
+
+        <form class="form form--two" data-newtxn-form novalidate>
+          <div class="field">
+            <label for="nt-client">Client email</label>
+            <input id="nt-client" name="client_email" type="email"
+                   autocomplete="off" placeholder="them@example.com" required>
+          </div>
+          <div class="field">
+            <label for="nt-kind">Type</label>
+            <select id="nt-kind" name="kind">
+              <option value="purchase">Purchase</option>
+              <option value="sale">Sale</option>
+            </select>
+          </div>
+          <div class="field form__full">
+            <label for="nt-address">Property address</label>
+            <input id="nt-address" name="address" type="text"
+                   placeholder="14652 South Ascot Bend Circle, Conroe, Texas" required>
+          </div>
+          <div class="field">
+            <label for="nt-file">File number</label>
+            <input id="nt-file" name="file_number" type="text" placeholder="114628-042916">
+          </div>
+          <div class="field">
+            <label for="nt-close">Expected close</label>
+            <input id="nt-close" name="expected_close" type="date">
+          </div>
+          <div class="field form__full">
+            <label for="nt-status">Status shown to the client</label>
+            <input id="nt-status" name="status" type="text" placeholder="Under contract">
+          </div>
+          <p class="note form__full" data-newtxn-status hidden></p>
+          <div class="form__full">
+            <button class="btn" type="submit">Create transaction <span class="btn__arrow" aria-hidden="true">&rarr;</span></button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/assets/supabase-config.js"></script>
+<script src="/assets/portal.js"></script>
+</body>
+</html>

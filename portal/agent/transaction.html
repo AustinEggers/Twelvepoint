@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transaction — TwelvePoint Agent Portal</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/portal.css">
+</head>
+
+<!-- ==========================================================================
+     STAFF TRANSACTION DASHBOARD
+
+     A SEPARATE PAGE from portal/client/transaction.html, and deliberately so.
+     Internal notes must never reach a client, and the surest way to guarantee
+     that is for them to have no place in the client page's markup or its
+     queries at all. Two audiences, two documents, no shared surface to leak
+     across.
+
+     Both read the same Supabase rows, so a change here shows on the client's
+     page on their next load. There is no second copy of the truth.
+
+     Reaching this page means middleware.js verified an agent or admin token.
+     Everything below is additionally enforced by RLS on every query.
+     ========================================================================== -->
+
+<body class="portalbody">
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="app" data-portal-page data-staff-detail>
+
+  <nav class="rail" aria-label="Portal">
+    <a class="rail__brand" href="/index.html" aria-label="TwelvePoint Realty Group — home">
+      <img src="/assets/mark-cream.png" width="648" height="112" alt="TwelvePoint Realty Group">
+    </a>
+    <div class="rail__nav">
+      <a href="/portal/agent/" aria-current="page">Transactions</a>
+      <a href="/portal/agent/contracts.html">Contracts</a>
+      <a href="/portal/agent/marketing.html">Marketing</a>
+      <a href="/portal/agent/vendors.html">Vendor List</a>
+      <a href="/portal/agent/team.html" data-admin-only hidden>Team</a>
+      <a href="/portal/agent/leads.html" data-staff-only hidden>Leads</a>
+    </div>
+    <div class="rail__foot">
+      <span class="rail__who">
+        <span class="rail__role" data-portal-rolelabel>Agent</span>
+        <span class="rail__name" data-portal-name></span>
+      </span>
+      <button class="rail__out" type="button" data-portal-logout>Log Out</button>
+    </div>
+  </nav>
+
+  <main class="appmain appmain--sticky" id="main">
+
+    <a class="dtl__back" href="/portal/agent/">&larr; All transactions</a>
+    <p class="note note--err" data-dtl-error hidden></p>
+
+    <div data-dtl-body hidden>
+
+      <!-- ------------------------------------------------ header ------ -->
+      <header class="txhead">
+        <div class="txhead__main">
+          <h1 class="dtl__addr" data-dtl-addr>Loading…</h1>
+          <p class="txhead__meta">
+            <span data-dtl-client></span>
+            <span data-dtl-filenumber></span>
+          </p>
+        </div>
+        <div class="txhead__side">
+          <span class="pill" data-dtl-filestatus>—</span>
+        </div>
+      </header>
+
+      <!-- ------------------------------------------------ timeline ---- -->
+      <section class="tcard">
+        <div class="tcard__head">
+          <h2 class="tcard__title">Transaction progress</h2>
+          <span class="tag tag--client">Visible to client</span>
+        </div>
+        <!-- Clickable stages. Writing straight through on click rather than
+             waiting for a save: stage is the field an agent changes most
+             often, usually mid-call, and the client's page should reflect it
+             immediately. Everything slower lives behind the save bar. -->
+        <ol class="stages" data-stages>
+          <li><button type="button" class="tstage" data-stage="1"><span class="tstage__n">1</span><span class="tstage__label">Under contract</span></button></li>
+          <li><button type="button" class="tstage" data-stage="2"><span class="tstage__n">2</span><span class="tstage__label">Option &amp; inspection</span></button></li>
+          <li><button type="button" class="tstage" data-stage="3"><span class="tstage__n">3</span><span class="tstage__label">Ready for closing</span></button></li>
+          <li><button type="button" class="tstage" data-stage="4"><span class="tstage__n">4</span><span class="tstage__label">Closed</span></button></li>
+        </ol>
+      </section>
+
+      <!-- ------------------------------------------------ attention --- -->
+      <section class="tcard tcard--attention">
+        <div class="tcard__head">
+          <h2 class="tcard__title">Needs attention</h2>
+        </div>
+        <ul class="attn" data-attention></ul>
+      </section>
+
+      <div class="cols">
+        <!-- ---------------------------------------------- details ----- -->
+        <section class="tcard">
+          <div class="tcard__head">
+            <h2 class="tcard__title">Transaction details</h2>
+            <span class="tag tag--client">Visible to client</span>
+          </div>
+          <div class="fgrid" data-details>
+            <label class="f"><span class="f__label">Property address</span>
+              <input class="f__in" type="text" data-fld="address"></label>
+            <label class="f"><span class="f__label">File number</span>
+              <input class="f__in" type="text" data-fld="file_number"></label>
+            <label class="f"><span class="f__label">Transaction type</span>
+              <select class="f__in" data-fld="kind">
+                <option value="purchase">Buyer</option>
+                <option value="sale">Seller</option>
+                <option value="lease">Lease</option>
+                <option value="other">Other</option>
+              </select></label>
+            <label class="f"><span class="f__label">File status</span>
+              <select class="f__in" data-fld="closing_status">
+                <option value="active">Active</option>
+                <option value="on_hold">On hold</option>
+                <option value="terminated">Terminated</option>
+                <option value="closed">Closed</option>
+              </select></label>
+            <label class="f"><span class="f__label">Sales price</span>
+              <input class="f__in" type="number" step="1000" min="0" data-fld="sales_price"></label>
+            <label class="f"><span class="f__label">Status note for client</span>
+              <input class="f__in" type="text" data-fld="status" placeholder="Under contract — option period"></label>
+            <p class="f f--static"><span class="f__label">Client</span>
+              <span class="f__val" data-dtl-clientname>—</span></p>
+            <p class="f f--static"><span class="f__label">Assigned agent</span>
+              <span class="f__val" data-dtl-agentname>—</span></p>
+          </div>
+        </section>
+
+        <!-- ---------------------------------------------- dates ------- -->
+        <section class="tcard">
+          <div class="tcard__head">
+            <h2 class="tcard__title">Dates &amp; deadlines</h2>
+          </div>
+          <div class="dates" data-dates>
+            <label class="dt"><span class="f__label">Contract date</span>
+              <input class="f__in" type="date" data-fld="contract_date"><span class="dt__flag"></span></label>
+            <label class="dt"><span class="f__label">Earnest money due</span>
+              <input class="f__in" type="date" data-fld="earnest_due"><span class="dt__flag"></span></label>
+            <label class="dt"><span class="f__label">Option period ends</span>
+              <input class="f__in" type="date" data-fld="option_ends"><span class="dt__flag"></span></label>
+            <label class="dt"><span class="f__label">Financing approval</span>
+              <input class="f__in" type="date" data-fld="financing_deadline"><span class="dt__flag"></span></label>
+            <label class="dt"><span class="f__label">Appraisal deadline</span>
+              <input class="f__in" type="date" data-fld="appraisal_deadline"><span class="dt__flag"></span></label>
+            <label class="dt"><span class="f__label">Final walkthrough</span>
+              <input class="f__in" type="date" data-fld="walkthrough_date"><span class="dt__flag"></span></label>
+            <label class="dt"><span class="f__label">Closing date</span>
+              <input class="f__in" type="date" data-fld="expected_close"><span class="dt__flag"></span></label>
+          </div>
+        </section>
+      </div>
+
+      <!-- ------------------------------------------------ milestones -- -->
+      <section class="tcard">
+        <div class="tcard__head">
+          <h2 class="tcard__title">Milestones</h2>
+          <span class="tag tag--client">Visible to client</span>
+        </div>
+        <div class="miles" data-milestones></div>
+      </section>
+
+      <!-- ------------------------------------------------ actions ----- -->
+      <section class="tcard">
+        <div class="tcard__head">
+          <h2 class="tcard__title">Client action items</h2>
+          <span class="tag tag--client">
+            <svg viewBox="0 0 16 16" class="tag__i" aria-hidden="true"><path d="M8 3C4.5 3 1.7 5.4 1 8c.7 2.6 3.5 5 7 5s6.3-2.4 7-5c-.7-2.6-3.5-5-7-5Zm0 8.2A3.2 3.2 0 1 1 8 4.8a3.2 3.2 0 0 1 0 6.4Zm0-1.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2Z" fill="currentColor"/></svg>
+            Visible to client
+          </span>
+        </div>
+        <div data-actionitems></div>
+        <form class="aiform" data-ai-form>
+          <input class="f__in" type="text" name="title" placeholder="What the client needs to do" required>
+          <input class="f__in" type="date" name="due_date" aria-label="Due date">
+          <button class="btn btn--sm" type="submit">Add</button>
+        </form>
+      </section>
+
+      <!-- ------------------------------------------------ documents --- -->
+      <section class="tcard">
+        <div class="tcard__head">
+          <h2 class="tcard__title">Transaction documents</h2>
+        </div>
+        <p class="note">
+          Documents are <strong>internal by default</strong>. Tick <em>Shared</em>
+          to let the client see one. The database enforces it — an unshared file
+          cannot be read or downloaded by a client account even directly.
+        </p>
+        <div data-documents></div>
+      </section>
+
+      <!-- ------------------------------------------------ internal ---- -->
+      <!-- Kept on this page only. The client page neither renders nor queries
+           this table, and RLS refuses it to client accounts regardless. -->
+      <section class="tcard tcard--internal">
+        <div class="tcard__head">
+          <h2 class="tcard__title">Internal notes</h2>
+          <span class="tag tag--internal">
+            <svg viewBox="0 0 16 16" class="tag__i" aria-hidden="true"><path d="M11.5 6.5V5a3.5 3.5 0 1 0-7 0v1.5H3.5v7h9v-7h-1Zm-5.5 0V5a2 2 0 1 1 4 0v1.5H6Z" fill="currentColor"/></svg>
+            Internal only — not visible to client
+          </span>
+        </div>
+        <textarea class="f__in intnotes" data-internal-notes rows="6"
+                  placeholder="Waiting on lender for updated approval. Called title 8/27."></textarea>
+      </section>
+
+      <!-- ------------------------------------------------ history ----- -->
+      <section class="tcard">
+        <div class="tcard__head">
+          <h2 class="tcard__title">History</h2>
+          <span class="tag tag--internal">Internal only</span>
+        </div>
+        <div data-audit></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Sticky save. Sits in the layout rather than over it, so it never
+       covers the last field on the page. -->
+  <div class="savebar" data-savebar hidden>
+    <span class="savebar__state" data-save-state>Unsaved changes</span>
+    <button class="btn" type="button" data-save>Save changes</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/assets/supabase-config.js"></script>
+<script src="/assets/portal.js"></script>
+</body>
+</html>

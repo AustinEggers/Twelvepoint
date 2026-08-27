@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contracts — TwelvePoint Agent Portal</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/portal.css">
+</head>
+
+<!-- ==========================================================================
+     AGENT — CONTRACTS
+
+     Links out to the promulgated forms rather than hosting copies of them.
+     TREC revises these on a schedule and using a superseded version is a
+     real problem, so the authoritative source is the only safe link. A PDF
+     saved here would be correct until the day it quietly was not.
+     ========================================================================== -->
+
+<body class="portalbody">
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="app" data-portal-page>
+
+  <nav class="rail" aria-label="Portal">
+    <a class="rail__brand" href="/index.html" aria-label="TwelvePoint Realty Group — home">
+      <img src="/assets/mark-cream.png" width="648" height="112" alt="TwelvePoint Realty Group">
+    </a>
+    <div class="rail__nav">
+      <a href="/portal/agent/">Transactions</a>
+      <a href="/portal/agent/contracts.html" aria-current="page">Contracts</a>
+      <a href="/portal/agent/marketing.html">Marketing</a>
+      <a href="/portal/agent/vendors.html">Vendor List</a>
+      <a href="/portal/agent/team.html" data-admin-only hidden>Team</a>
+      <a href="/portal/agent/leads.html" data-staff-only hidden>Leads</a>
+    </div>
+    <div class="rail__foot">
+      <span class="rail__who">
+        <span class="rail__role" data-portal-rolelabel>Agent</span>
+        <span class="rail__name" data-portal-name></span>
+      </span>
+      <button class="rail__out" type="button" data-portal-logout>Log Out</button>
+    </div>
+  </nav>
+
+  <main class="appmain" id="main">
+    <div class="panel">
+      <h1 class="panel__title">Contracts</h1>
+      <p class="panel__count">Forms, disclosures, and the file of record</p>
+
+      <p class="note">
+        These link to TREC and Texas REALTORS® directly. Both revise their
+        forms on a schedule, so always pull the current version rather than a
+        saved copy &mdash; using a superseded form is a licence problem, not a
+        paperwork one.
+      </p>
+
+      <h2 class="sect">Promulgated forms</h2>
+      <div class="contacts">
+        <div class="contact">
+          <p class="contact__role">TREC</p>
+          <div class="contact__body">
+            <p class="contact__co">Contract forms</p>
+            <p><a class="textlink" href="https://www.trec.texas.gov/forms/contract-forms" rel="noopener" target="_blank">Current contract forms</a></p>
+            <p><a class="textlink" href="https://www.trec.texas.gov/forms/addenda" rel="noopener" target="_blank">Addenda</a></p>
+            <p><a class="textlink" href="https://www.trec.texas.gov/forms" rel="noopener" target="_blank">All TREC forms</a></p>
+          </div>
+        </div>
+
+        <div class="contact">
+          <p class="contact__role">Texas REALTORS®</p>
+          <div class="contact__body">
+            <p class="contact__co">Member forms library</p>
+            <p><a class="textlink" href="https://www.texasrealestate.com/members/legal-and-ethics/forms/" rel="noopener" target="_blank">TAR forms (member login)</a></p>
+            <p class="contact__where">Listing agreements, buyer representation, and the residential lease forms live here rather than with TREC.</p>
+          </div>
+        </div>
+
+        <div class="contact">
+          <p class="contact__role">Required notices</p>
+          <div class="contact__body">
+            <p class="contact__co">Every client, every time</p>
+            <p><a class="textlink" href="https://gregtxrealty.com/downloads/IABS1-0-gold.pdf" rel="noopener" target="_blank">Information About Brokerage Services</a></p>
+            <p><a class="textlink" href="https://gregtxrealty.com/downloads/CN%201-2.pdf" rel="noopener" target="_blank">Consumer Protection Notice</a></p>
+            <p class="contact__where">The IABS goes out at first substantive communication &mdash; not at signing.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="sect">Transaction management</h2>
+      <div class="empty">
+        <h3>Platform not confirmed</h3>
+        <p>
+          Executed contracts and signatures belong on the brokerage&rsquo;s system,
+          where Texas record retention expects them. Confirm what Goldmount
+          carries &mdash; Dotloop, SkySlope, or otherwise &mdash; and link it here.
+        </p>
+      </div>
+
+      <h2 class="sect">Team templates</h2>
+      <div class="empty">
+        <h3>Nothing added yet</h3>
+        <p>
+          Anything the team fills in the same way every time &mdash; a standard
+          repair amendment, a preferred option period, a seller net sheet &mdash;
+          belongs here so it is written once.
+        </p>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/assets/supabase-config.js"></script>
+<script src="/assets/portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "twelvepoint-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "TwelvePoint Realty Group — static site. This package.json exists ONLY so Vercel can install the two dependencies that middleware.js needs; there is no build step and no bundler. The HTML, CSS and JS in this repo are served exactly as written.",
+  "dependencies": {
+    "@vercel/functions": "^2.0.0",
+    "jose": "^5.9.6"
+  }
+}

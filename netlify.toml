@@ -1,0 +1,117 @@
+# =====================================================================
+# SUPERSEDED — this site now deploys to VERCEL.
+#
+# The live equivalents are vercel.json (headers, redirects) and
+# middleware.js (the /portal/* access gate). Vercel ignores this file
+# entirely, so it is harmless where it sits and is kept only in case the
+# site ever moves back to Netlify.
+#
+# DO NOT edit this expecting it to change anything on the live site.
+# =====================================================================
+# =====================================================================
+# Netlify configuration — TwelvePoint Realty Group
+# =====================================================================
+
+[build]
+  publish = "."
+
+# Pretty URLs would 301 /buyers.html -> /buyers. Every internal link and
+# every canonical on this site uses the .html form, so leaving it on
+# would point search engines at URLs that immediately redirect and burn
+# crawl budget on the way. Off keeps one URL per page.
+[build.processing]
+  skip_processing = false
+[build.processing.html]
+  pretty_urls = false
+
+# ------------------------------------------------------- portal access
+# Access control for /portal/* lives in netlify/edge-functions/portal-gate.js,
+# NOT here. Netlify's built-in `conditions = {Role = [...]}` redirects only
+# understand Netlify Identity's own cookie; with Supabase the token has to be
+# verified against the project's JWKS, which needs code.
+#
+# The edge function declares its own `path` config, so it binds itself to
+# /portal/* without a redirect rule. Do not add a plain redirect for /portal/*
+# here — a 200-status rewrite would run BEFORE the function and serve the page
+# ungated.
+#
+# Bare /portal is not a page; the login routes onward by role.
+[[redirects]]
+  from = "/portal"
+  to = "/login.html"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/portal/"
+  to = "/login.html"
+  status = 302
+  force = true
+
+# ---------------------------------------------------------------- caching
+# Hashless filenames, so HTML must revalidate or edits never reach anyone.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Images only. These rules are deliberately extension-scoped rather than a
+# blanket /assets/* — a broad immutable rule would also swallow the CSS and
+# JS below, and a year-long cache on portal.js means an auth fix reaches
+# nobody. Keep these lists disjoint.
+[[headers]]
+  for = "/assets/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*.mp4"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# CSS and JS are NOT fingerprinted, so they cannot be immutable. An hour
+# is long enough to help and short enough that a fix lands the same day.
+[[headers]]
+  for = "/assets/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/assets/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Portal pages must never be cached by a shared proxy, and never indexed.
+# The edge already refuses them to strangers; this is the second lock.
+[[headers]]
+  for = "/portal/*"
+  [headers.values]
+    Cache-Control = "private, no-store, max-age=0, must-revalidate"
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+
+# --------------------------------------------------------------- security
+# Not ranking factors on their own, but HTTPS hygiene is table stakes and
+# a mixed-content or clickjacking warning is a real trust problem.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"

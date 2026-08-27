@@ -1,0 +1,110 @@
+/* ==========================================================================
+   IDX Broker skin
+   Nudges IDX Broker's injected markup toward the TwelvePoint design system.
+   Their pages render between #idxStart and #idxStop inside idx-wrapper.html.
+
+   These are best-effort overrides written against IDX Broker's documented
+   class prefix (.IDX-*). Once the account is live, load a real results page
+   and tighten these — some selectors will need adjusting to their actual
+   output, which cannot be inspected before an account exists.
+   ========================================================================== */
+
+/* ---- typography ------------------------------------------------------- */
+#idxStart, #idxStart [class*="IDX-"] {
+  font-family: var(--body);
+  color: var(--ink);
+}
+#idxStart h1, #idxStart h2, #idxStart h3,
+#idxStart [class*="IDX-"] h1,
+#idxStart [class*="IDX-"] h2,
+#idxStart [class*="IDX-"] h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: -.008em;
+  color: var(--ink);
+}
+
+/* Prices, bed/bath counts, MLS numbers — the survey-ledger voice */
+#idxStart [class*="IDX-price"],
+#idxStart [class*="IDX-resultsPrice"],
+#idxStart [class*="IDX-field-price"],
+#idxStart [class*="IDX-mlsNumber"] {
+  font-family: var(--data);
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-deep);
+  letter-spacing: .01em;
+}
+
+/* ---- links ------------------------------------------------------------ */
+#idxStart a,
+#idxStart [class*="IDX-"] a {
+  color: var(--gold-deep);
+  text-decoration: none;
+}
+#idxStart a:hover,
+#idxStart [class*="IDX-"] a:hover { color: var(--ink); }
+
+/* ---- buttons ---------------------------------------------------------- */
+#idxStart [class*="IDX-btn"],
+#idxStart button[class*="IDX-"],
+#idxStart input[type="submit"],
+#idxStart .IDX-searchButton {
+  font-family: var(--data);
+  font-size: var(--t-small);
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: #FFF9F0;
+  border-radius: 0;
+  padding: .9rem 1.6rem;
+  box-shadow: none;
+  transition: background .35s var(--ease), border-color .35s var(--ease);
+}
+#idxStart [class*="IDX-btn"]:hover,
+#idxStart button[class*="IDX-"]:hover,
+#idxStart input[type="submit"]:hover,
+#idxStart .IDX-searchButton:hover {
+  background: var(--gold-deep);
+  border-color: var(--gold-deep);
+}
+
+/* ---- form controls ---------------------------------------------------- */
+#idxStart input[type="text"],
+#idxStart input[type="number"],
+#idxStart input[type="email"],
+#idxStart input[type="tel"],
+#idxStart select,
+#idxStart textarea {
+  font-family: var(--body);
+  background: #FFFDFA;
+  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  border-radius: 0;
+  color: var(--ink);
+  box-shadow: none;
+}
+#idxStart input:focus,
+#idxStart select:focus,
+#idxStart textarea:focus {
+  border-color: var(--gold);
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---- panels, cards, rules --------------------------------------------- */
+#idxStart [class*="IDX-panel"],
+#idxStart [class*="IDX-resultsCell"],
+#idxStart [class*="IDX-detailsPanel"] {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--gold) 26%, transparent);
+  border-radius: 0;
+  box-shadow: none;
+}
+#idxStart hr,
+#idxStart [class*="IDX-"] hr { border: 0; border-top: var(--rule); }
+
+/* Strip the rounded-corner / drop-shadow look that reads as generic SaaS */
+#idxStart [class*="IDX-"] {
+  border-radius: 0 !important;
+}

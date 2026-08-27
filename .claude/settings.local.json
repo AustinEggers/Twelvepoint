@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls ~/.claude/skills 2>/dev/null || echo \"no skills dir\")",
+      "Bash(git --version)",
+      "Bash(curl --version)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s https://registry.npmjs.org/ui-ux-pro-max-cli)",
+      "Bash(python -c ' *)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}
