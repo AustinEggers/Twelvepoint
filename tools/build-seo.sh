@@ -353,6 +353,14 @@ build_sitemap() {
       printf '  <url>\n    <loc>%s%s</loc>\n    <lastmod>%s</lastmod>\n    <priority>%s</priority>\n  </url>\n' \
         "$SITE_URL" "$path" "$lastmod" "$prio"
     done
+    # Notes carry their own SEO block from tools/build-notes.sh; they are
+    # listed here purely so search engines can discover them.
+    for n in notes/*.html; do
+      [ -e "$n" ] || continue
+      lastmod="$(date -u -r "$n" +%Y-%m-%d)"
+      printf '  <url>\n    <loc>%s/%s</loc>\n    <lastmod>%s</lastmod>\n    <priority>0.6</priority>\n  </url>\n' \
+        "$SITE_URL" "$n" "$lastmod"
+    done
     echo '</urlset>'
   }
 }

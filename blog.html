@@ -85,10 +85,13 @@
        The yellow "example posts" notice that used to sit here is gone from
        the visible page — it interrupted the editorial flow.
 
-       IT IS STILL TRUE, THOUGH: every entry below is a placeholder. The
-       topics are real suggestions for this market, but none are written and
-       all of them point at blog-post-template.html. Before this page goes
-       live, either write the notes or take Notes out of the navigation.
+       The nine notes below are real, written articles in notes/. They are
+       generated from notes/_content/ by tools/build-notes.sh — edit the
+       source file and re-run, rather than editing notes/*.html by hand.
+
+       Market Insights is the one category still empty, deliberately: it
+       needs current figures (median price, days on market, inventory) and
+       inventing those would be worse than an empty tab.
        ==================================================================== -->
   <section class="band notes__head">
     <div class="wrap">
@@ -102,19 +105,19 @@
   <section class="band notes__featured">
     <div class="wrap">
       <p class="notes__flag reveal"><span>Featured</span></p>
-      <a class="postlead reveal" href="blog-post-template.html">
+      <a class="postlead reveal" href="/notes/option-period.html">
         <div class="postlead__media">
-          <img width="960" height="720" src="assets/property-sunset.jpg"
-               alt="A Texas home at dusk with lamps lit in the front rooms" loading="lazy" decoding="async">
+          <img width="960" height="720" src="assets/estate-drive.jpg"
+               alt="A Texas home at the end of a long drive" loading="lazy" decoding="async">
         </div>
         <div class="postlead__body">
           <div class="postmeta">
-            <span class="postmeta__cat">Selling</span>
-            <span>March 2026</span>
-            <span>6 min read</span>
+            <span class="postmeta__cat">Buying</span>
+            <span>August 2026</span>
+            <span>5 min read</span>
           </div>
-          <h2 class="postlead__title">What your house is worth versus what the website says</h2>
-          <p class="postlead__excerpt">Automated estimates work off public records. They cannot see your roof, your foundation history, or that your section of the subdivision backs to a greenbelt. Here is what actually moves the number in Houston.</p>
+          <h2 class="postlead__title">What the option period actually buys you</h2>
+          <p class="postlead__excerpt">A few days and a small fee buy you the right to walk away for any reason at all. Most buyers spend them badly &mdash; here is what the first twenty-four hours should look like.</p>
           <p class="post__more">Read the note &rarr;</p>
         </div>
       </a>
@@ -141,51 +144,67 @@
 
       <div class="postgrid" data-notegrid>
 
-        <a class="post reveal" href="blog-post-template.html" data-cat="Buying">
-          <div class="post__media"><img width="1280" height="698" src="assets/estate-drive.jpg" alt="A gated drive leading into a Houston-area neighborhood" loading="lazy" decoding="async"></div>
-          <div class="postmeta"><span class="postmeta__cat">Buying</span><span>Feb 2026</span><span>5 min</span></div>
-          <h3 class="post__title">MUD districts, and why the cheaper house costs more</h3>
-          <p class="post__excerpt">Two identical homes a mile apart can carry very different monthly payments. Buyers shop payments, not prices, and the tax rate is usually the reason.</p>
+        <a class="post reveal" href="/notes/choosing-a-suburb.html" data-cat="Neighborhoods">
+          <div class="post__media"><img width="1280" height="698" src="assets/estate-drive.jpg" alt="A quiet suburban street at golden hour" loading="lazy" decoding="async"></div>
+          <div class="postmeta"><span class="postmeta__cat">Neighborhoods</span><span>August 2026</span><span>5 min</span></div>
+          <h3 class="post__title">Choosing a Houston suburb without choosing wrong</h3>
+          <p class="post__excerpt">Most people pick an area from a list of names and a drive-through on a Saturday. Here is what to check instead.</p>
           <p class="post__more">Read the note &rarr;</p>
         </a>
 
-        <a class="post reveal reveal--d1" href="blog-post-template.html" data-cat="Neighborhoods">
-          <div class="post__media"><img width="1024" height="1024" src="assets/hero-oaks.jpg" alt="A live oak allée over a residential street in The Woodlands" loading="lazy" decoding="async"></div>
-          <div class="postmeta"><span class="postmeta__cat">Neighborhoods</span><span>Feb 2026</span><span>8 min</span></div>
-          <h3 class="post__title">The Woodlands, village by village</h3>
-          <p class="post__excerpt">Nine villages, very different price bands and school zones. A short guide to which one fits what you are actually looking for.</p>
-          <p class="post__more">Read the note &rarr;</p>
-        </a>
-
-        <a class="post reveal reveal--d2" href="blog-post-template.html" data-cat="Buying">
-          <div class="post__media"><img width="1280" height="698" src="assets/property-ranch.jpg" alt="A Texas farmhouse on open acreage" loading="lazy" decoding="async"></div>
-          <div class="postmeta"><span class="postmeta__cat">Buying</span><span>Jan 2026</span><span>7 min</span></div>
-          <h3 class="post__title">Reading a Houston foundation report without panicking</h3>
-          <p class="post__excerpt">Gumbo clay moves. Some of what an inspector writes up is normal for the age of the house, and some is a five-figure problem. Telling them apart.</p>
-          <p class="post__more">Read the note &rarr;</p>
-        </a>
-
-        <a class="post reveal" href="blog-post-template.html" data-cat="Homeownership">
-          <div class="post__media"><img width="1122" height="840" src="assets/estate-aerial.jpg" alt="An aerial view of a Houston-area residential neighborhood" loading="lazy" decoding="async"></div>
-          <div class="postmeta"><span class="postmeta__cat">Homeownership</span><span>Jan 2026</span><span>6 min</span></div>
-          <h3 class="post__title">Protesting your property taxes, start to finish</h3>
-          <p class="post__excerpt">Most Houston owners never file. The ones who do usually win something. What to gather, when to file, and what a comparable analysis needs to show.</p>
-          <p class="post__more">Read the note &rarr;</p>
-        </a>
-
-        <a class="post reveal reveal--d1" href="blog-post-template.html" data-cat="Buying">
-          <div class="post__media"><img width="1280" height="698" src="assets/kitchen-ranch.jpg" alt="The living space of a Texas ranch home" loading="lazy" decoding="async"></div>
-          <div class="postmeta"><span class="postmeta__cat">Buying</span><span>Dec 2025</span><span>5 min</span></div>
+        <a class="post reveal reveal--d1" href="/notes/flood-zone-versus-history.html" data-cat="Neighborhoods">
+          <div class="post__media"><img width="1280" height="698" src="assets/hero-oaks.jpg" alt="Oak trees over a Houston street" loading="lazy" decoding="async"></div>
+          <div class="postmeta"><span class="postmeta__cat">Neighborhoods</span><span>August 2026</span><span>5 min</span></div>
           <h3 class="post__title">Flood zone versus flood history</h3>
-          <p class="post__excerpt">The map tells you one thing. What actually happened to the house tells you another. Plenty of homes that took water were never in a mapped zone.</p>
+          <p class="post__excerpt">The map tells you what insurance will cost. It does not tell you whether the house has taken water. Those are different questions.</p>
           <p class="post__more">Read the note &rarr;</p>
         </a>
 
-        <a class="post reveal reveal--d2" href="blog-post-template.html" data-cat="Selling">
-          <div class="post__media"><img width="2500" height="1667" src="assets/kitchen-arch.jpg" alt="A renovated kitchen in white oak and stone" loading="lazy" decoding="async"></div>
-          <div class="postmeta"><span class="postmeta__cat">Selling</span><span>Dec 2025</span><span>6 min</span></div>
+        <a class="post reveal reveal--d2" href="/notes/foundation-report.html" data-cat="Buying">
+          <div class="post__media"><img width="1280" height="698" src="assets/kitchen-ranch.jpg" alt="Interior of a Houston home" loading="lazy" decoding="async"></div>
+          <div class="postmeta"><span class="postmeta__cat">Buying</span><span>August 2026</span><span>6 min</span></div>
+          <h3 class="post__title">Reading a Houston foundation report without panicking</h3>
+          <p class="post__excerpt">Movement is normal here. The report will say things that sound alarming. Here is how to tell serious from ordinary.</p>
+          <p class="post__more">Read the note &rarr;</p>
+        </a>
+
+        <a class="post reveal" href="/notes/homestead-exemption.html" data-cat="Homeownership">
+          <div class="post__media"><img width="1280" height="698" src="assets/property-ranch.jpg" alt="A Texas home with a wide front lawn" loading="lazy" decoding="async"></div>
+          <div class="postmeta"><span class="postmeta__cat">Homeownership</span><span>August 2026</span><span>4 min</span></div>
+          <h3 class="post__title">File your homestead exemption. It is free and most people forget.</h3>
+          <p class="post__excerpt">It costs nothing, takes about ten minutes, and is worth more in 2026 than it has ever been. There is a deadline.</p>
+          <p class="post__more">Read the note &rarr;</p>
+        </a>
+
+        <a class="post reveal reveal--d1" href="/notes/mud-districts.html" data-cat="Buying">
+          <div class="post__media"><img width="1280" height="698" src="assets/estate-aerial.jpg" alt="Aerial view of a Texas subdivision" loading="lazy" decoding="async"></div>
+          <div class="postmeta"><span class="postmeta__cat">Buying</span><span>August 2026</span><span>6 min</span></div>
+          <h3 class="post__title">MUD districts, and why the cheaper house costs more</h3>
+          <p class="post__excerpt">Two nearly identical homes a mile apart can carry very different monthly payments. The difference is usually on the tax line, not the price line.</p>
+          <p class="post__more">Read the note &rarr;</p>
+        </a>
+
+        <a class="post reveal reveal--d2" href="/notes/pricing-the-first-two-weeks.html" data-cat="Selling">
+          <div class="post__media"><img width="1280" height="698" src="assets/living-modern.jpg" alt="A bright living room with tall windows" loading="lazy" decoding="async"></div>
+          <div class="postmeta"><span class="postmeta__cat">Selling</span><span>August 2026</span><span>5 min</span></div>
+          <h3 class="post__title">The first two weeks decide the price</h3>
+          <p class="post__excerpt">Your listing gets one burst of attention. What you do with it determines whether the rest of the campaign is a negotiation or a slow retreat.</p>
+          <p class="post__more">Read the note &rarr;</p>
+        </a>
+
+        <a class="post reveal" href="/notes/protesting-property-taxes.html" data-cat="Homeownership">
+          <div class="post__media"><img width="1280" height="698" src="assets/great-room.jpg" alt="The interior of a Houston home" loading="lazy" decoding="async"></div>
+          <div class="postmeta"><span class="postmeta__cat">Homeownership</span><span>August 2026</span><span>6 min</span></div>
+          <h3 class="post__title">Protesting your property taxes, start to finish</h3>
+          <p class="post__excerpt">Most Houston homeowners have grounds to protest and never do. The process is duller and more winnable than people expect.</p>
+          <p class="post__more">Read the note &rarr;</p>
+        </a>
+
+        <a class="post reveal reveal--d1" href="/notes/repairs-before-listing.html" data-cat="Selling">
+          <div class="post__media"><img width="1280" height="698" src="assets/kitchen-arch.jpg" alt="A renovated kitchen with natural light" loading="lazy" decoding="async"></div>
+          <div class="postmeta"><span class="postmeta__cat">Selling</span><span>August 2026</span><span>5 min</span></div>
           <h3 class="post__title">The repairs worth doing before you list, and the ones that are not</h3>
-          <p class="post__excerpt">A short list that returns more than it costs, and a longer list of things sellers spend money on that buyers never notice.</p>
+          <p class="post__excerpt">Some work returns most of its cost at resale. Some returns almost none of it. Knowing which is which saves thousands.</p>
           <p class="post__more">Read the note &rarr;</p>
         </a>
 
