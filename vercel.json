@@ -10,21 +10,21 @@
 
   "headers": [
     {
-      "source": "/assets/(.*)\.(jpg|jpeg|png|webp|avif|mp4|ico)",
+      "source": "/assets/(.*)\\.(jpg|jpeg|png|webp|avif|mp4|ico)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
 
     {
-      "source": "/assets/(.*)\.(css|js)",
+      "source": "/assets/(.*)\\.(css|js)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
       ]
     },
 
     {
-      "source": "/(.*)\.html",
+      "source": "/(.*)\\.html",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
