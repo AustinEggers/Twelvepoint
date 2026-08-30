@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css">
 <link rel="stylesheet" href="/assets/portal.css">
+<link rel="stylesheet" href="/portal/agent/dashboard.css">
 </head>
 
 <!-- ==========================================================================
@@ -26,7 +27,7 @@
      decided by the database rather than by this page.
      ========================================================================== -->
 
-<body class="portalbody">
+<body class="portalbody agentui">
 <a class="skip" href="#main">Skip to content</a>
 
 <div class="app" data-portal-page>
@@ -36,12 +37,12 @@
       <img src="/assets/mark-cream.png" width="648" height="112" alt="TwelvePoint Realty Group">
     </a>
     <div class="rail__nav">
-      <a href="/portal/agent/" aria-current="page">Transactions</a>
-      <a href="/portal/agent/contracts.html">Contracts</a>
-      <a href="/portal/agent/marketing.html">Marketing</a>
-      <a href="/portal/agent/vendors.html">Vendor List</a>
-      <a href="/portal/agent/team.html" data-admin-only hidden>Team</a>
-      <a href="/portal/agent/leads.html" data-staff-only hidden>Leads</a>
+      <a data-icon="transactions" href="/portal/agent/" aria-current="page">Transactions</a>
+      <a data-icon="contracts" href="/portal/agent/contracts.html">Contracts</a>
+      <a data-icon="marketing" href="/portal/agent/marketing.html">Marketing</a>
+      <a data-icon="vendors" href="/portal/agent/vendors.html">Vendor List</a>
+      <a data-icon="team" href="/portal/agent/team.html" data-admin-only hidden>Team</a>
+      <a data-icon="leads" href="/portal/agent/leads.html" data-staff-only hidden>Leads</a>
     </div>
     <div class="rail__foot">
       <span class="rail__who">
@@ -118,5 +119,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/assets/supabase-config.js"></script>
 <script src="/assets/portal.js"></script>
+<script src="/assets/agent.js"></script>
 </body>
 </html>

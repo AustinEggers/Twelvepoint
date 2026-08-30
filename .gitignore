@@ -34,3 +34,8 @@ node_modules/
 .vercel/
 .DS_Store
 Thumbs.db
+
+# Auth-free copies of portal pages, generated on the fly to test layout
+# without a Supabase session. Never part of the site.
+_h-*.html
+_shell-harness.html

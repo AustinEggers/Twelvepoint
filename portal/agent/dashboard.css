@@ -1,0 +1,504 @@
+/* =====================================================================
+   dashboard.css — the agent and admin backend.
+
+   LOADED ONLY BY PAGES UNDER /portal/agent/. Never by the client portal,
+   never by the marketing site.
+
+   Everything here is scoped under .agentui, which sits on <body> on those
+   pages and nowhere else. Two reasons for the belt and braces: the file
+   being loaded selectively is easy to get wrong later by copying a <head>
+   block, and .app / .rail / .panel are all shared class names that the
+   client portal also uses. An unscoped rule in this file would silently
+   redesign a client's transaction page.
+
+   WHY THIS LOOKS DIFFERENT FROM THE REST OF THE SITE
+   The public site is a brochure and the client portal is a reassurance.
+   This is neither. It is the tool an agent has open all day while a
+   transaction is live, and the thing it has to be good at is showing a
+   lot of true information quickly. So: tighter type, denser rows, real
+   status colour, and the brand reduced to the mark in the sidebar and a
+   thin gold accent on the active row.
+
+   Loaded AFTER portal.css, so equal-specificity rules here win.
+   ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* tokens                                                              */
+/* ------------------------------------------------------------------ */
+/* Deliberately a separate scale from site.css. The marketing palette is
+   warm cream and gold; a dashboard needs neutral ground so that status
+   colour is the only colour that means anything. */
+.agentui {
+  --ag-bg:        #f6f7f9;   /* app background, cool neutral    */
+  --ag-surface:   #ffffff;   /* cards, table rows               */
+  --ag-sunken:    #fafbfc;   /* table headers, inset areas      */
+  --ag-line:      #e3e6ea;   /* default border                  */
+  --ag-line-soft: #eef0f3;   /* internal dividers               */
+
+  --ag-text:      #16191d;   /* primary                         */
+  --ag-text-2:    #545c66;   /* secondary                       */
+  --ag-text-3:    #838d99;   /* labels, meta                    */
+
+  --ag-rail:      #14171b;   /* sidebar                         */
+  --ag-rail-2:    #9aa4b0;   /* sidebar idle text               */
+
+  /* Status. One hue per meaning, and no decorative use of any of them. */
+  --ag-good:      #157f4b;  --ag-good-bg:  #e8f5ee;  --ag-good-line: #bfe3ce;
+  --ag-warn:      #9a6207;  --ag-warn-bg:  #fdf3e2;  --ag-warn-line: #f0dcb4;
+  --ag-bad:       #b3261e;  --ag-bad-bg:   #fdecea;  --ag-bad-line:  #f5c9c5;
+  --ag-idle:      #6b7480;  --ag-idle-bg:  #f1f3f5;  --ag-idle-line: #e0e4e8;
+  --ag-info:      #1f5fa8;  --ag-info-bg:  #eaf2fb;  --ag-info-line: #c6dcf3;
+
+  --ag-gold:      #b08d3f;   /* the only brand colour used here */
+
+  --ag-radius:    7px;
+  --ag-radius-sm: 5px;
+  --ag-shadow:    0 1px 2px rgba(16, 20, 26, .05);
+  --ag-shadow-md: 0 4px 14px rgba(16, 20, 26, .10);
+
+  --ag-rail-w:    14.5rem;
+  --ag-rail-w-sm: 3.75rem;
+
+  /* 14px base rather than the site's 16px+. Density is the point. */
+  --ag-fs:        0.875rem;
+  --ag-fs-sm:     0.8125rem;
+  --ag-fs-xs:     0.75rem;
+
+  --ag-ui: "Libre Franklin", -apple-system, BlinkMacSystemFont, "Segoe UI",
+           Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ag-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ------------------------------------------------------------------ */
+/* reset the inherited brochure styling                                */
+/* ------------------------------------------------------------------ */
+body.agentui {
+  background: var(--ag-bg);
+  color: var(--ag-text);
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* site.css sets Cormorant on headings. In here a heading is a label for
+   a region, not a piece of typography. */
+.agentui h1, .agentui h2, .agentui h3, .agentui h4 {
+  font-family: var(--ag-ui);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ag-text);
+  margin: 0;
+}
+
+.agentui [hidden] { display: none !important; }
+
+/* ------------------------------------------------------------------ */
+/* shell                                                               */
+/* ------------------------------------------------------------------ */
+.agentui .app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--ag-rail-w) 1fr;
+  background: var(--ag-bg);
+}
+.agentui.is-railtight .app { grid-template-columns: var(--ag-rail-w-sm) 1fr; }
+
+.agentui .appmain {
+  padding: 1.25rem 1.5rem 3rem;
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* sidebar                                                             */
+/* ------------------------------------------------------------------ */
+.agentui .rail {
+  background: var(--ag-rail);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.agentui .rail__brand {
+  display: flex;
+  align-items: center;
+  min-height: 3.5rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+}
+.agentui .rail__brand img {
+  width: 100%;
+  max-width: 8.5rem;
+  height: auto;
+  display: block;
+}
+.agentui.is-railtight .rail__brand img { display: none; }
+
+.agentui .rail__nav {
+  display: flex;
+  flex-direction: column;
+  padding: .5rem .5rem 0;
+  gap: 1px;
+  overflow-y: auto;
+}
+.agentui .rail__nav a {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  padding: .5rem .625rem;
+  border-radius: var(--ag-radius-sm);
+  border-left: 0;
+  color: var(--ag-rail-2);
+  text-decoration: none;
+  font-size: var(--ag-fs);
+  font-weight: 450;
+  white-space: nowrap;
+}
+.agentui .rail__nav a:hover {
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+}
+.agentui .rail__nav a[aria-current="page"] {
+  background: rgba(255, 255, 255, .09);
+  color: #fff;
+  font-weight: 550;
+  border-left: 0;
+  box-shadow: inset 2px 0 0 var(--ag-gold);
+}
+.agentui .rail__nav svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.agentui.is-railtight .rail__label { display: none; }
+.agentui.is-railtight .rail__nav a { justify-content: center; padding-inline: 0; }
+
+/* Collapse toggle. Sits with the nav rather than the footer so it reads
+   as a view control, not an account action. */
+.agentui .rail__toggle {
+  margin: .5rem .5rem 0;
+  padding: .45rem .625rem;
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  background: none;
+  border: 0;
+  border-radius: var(--ag-radius-sm);
+  color: var(--ag-rail-2);
+  font: inherit;
+  font-size: var(--ag-fs-sm);
+  cursor: pointer;
+  width: calc(100% - 1rem);
+}
+.agentui .rail__toggle:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+.agentui .rail__toggle svg { width: 17px; height: 17px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.agentui.is-railtight .rail__toggle { justify-content: center; padding-inline: 0; }
+.agentui.is-railtight .rail__toggle svg { transform: scaleX(-1); }
+
+.agentui .rail__foot {
+  margin-top: auto;
+  padding: .75rem;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+.agentui .rail__who { display: block; margin-bottom: .5rem; line-height: 1.3; min-width: 0; }
+.agentui .rail__role {
+  display: inline-block;
+  font-family: var(--ag-mono);
+  font-size: 10px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ag-gold);
+  margin-bottom: .1rem;
+}
+.agentui .rail__name {
+  display: block;
+  font-size: var(--ag-fs-sm);
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agentui .rail__out {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: var(--ag-radius-sm);
+  color: var(--ag-rail-2);
+  font: inherit;
+  font-size: var(--ag-fs-sm);
+  padding: .35rem .6rem;
+  cursor: pointer;
+  width: 100%;
+}
+.agentui .rail__out:hover { color: #fff; border-color: rgba(255, 255, 255, .34); }
+.agentui.is-railtight .rail__who { display: none; }
+.agentui.is-railtight .rail__out { font-size: 0; padding: .45rem 0; }
+.agentui.is-railtight .rail__out::after { content: "\2192"; font-size: 13px; }
+
+/* ------------------------------------------------------------------ */
+/* mobile: the rail becomes a drawer                                   */
+/* ------------------------------------------------------------------ */
+.agentui .railbar { display: none; }
+
+@media (max-width: 60rem) {
+  /* One column, and TWO ROWS: the bar sizes to its content and the main
+     region takes the rest. Without the explicit rows the grid splits its
+     100dvh evenly between the two and the bar becomes half the screen. */
+  .agentui .app,
+  .agentui.is-railtight .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  /* A top bar appears only here, so the drawer has something to open it
+     and the page still has somewhere to show who is signed in. */
+  .agentui .railbar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--ag-rail);
+    color: #fff;
+    padding: .5rem .75rem;
+    min-height: 3rem;
+  }
+  .agentui .railbar img { height: 22px; width: auto; }
+  .agentui .railbar__menu {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: var(--ag-radius-sm);
+    color: #fff;
+    padding: .35rem .5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .agentui .railbar__menu svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; }
+
+  .agentui .rail {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(17rem, 82vw);
+    z-index: 60;
+    transform: translateX(-100%);
+    transition: transform .18s ease;
+    box-shadow: 0 0 40px rgba(0, 0, 0, .4);
+  }
+  .agentui.is-railopen .rail { transform: none; }
+  .agentui.is-railtight .rail__brand img,
+  .agentui.is-railtight .rail__label { display: block; }
+  .agentui.is-railtight .rail__nav a { justify-content: flex-start; padding-inline: .625rem; }
+  .agentui.is-railtight .rail__who { display: block; }
+  .agentui.is-railtight .rail__out { font-size: var(--ag-fs-sm); padding: .35rem .6rem; }
+  .agentui.is-railtight .rail__out::after { content: none; }
+  .agentui .rail__toggle { display: none; }
+
+  .agentui .railscrim {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(10, 12, 15, .45);
+    border: 0;
+    padding: 0;
+  }
+
+  .agentui .appmain { padding: 1rem .875rem 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .agentui .rail { transition: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/* page header                                                         */
+/* ------------------------------------------------------------------ */
+.ag-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.ag-head__title { font-size: 1.15rem; font-weight: 600; }
+.ag-head__sub {
+  margin: .15rem 0 0;
+  color: var(--ag-text-3);
+  font-size: var(--ag-fs-sm);
+}
+.ag-head__actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+/* ------------------------------------------------------------------ */
+/* buttons                                                             */
+/* ------------------------------------------------------------------ */
+.ag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: .4rem .75rem;
+  border-radius: var(--ag-radius-sm);
+  border: 1px solid var(--ag-line);
+  background: var(--ag-surface);
+  color: var(--ag-text);
+  font: inherit;
+  font-size: var(--ag-fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  box-shadow: var(--ag-shadow);
+}
+.ag-btn:hover { background: var(--ag-sunken); border-color: #d2d7dd; }
+.ag-btn:disabled { opacity: .5; cursor: not-allowed; }
+.ag-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+.ag-btn--primary {
+  background: var(--ag-text);
+  border-color: var(--ag-text);
+  color: #fff;
+}
+.ag-btn--primary:hover { background: #000; border-color: #000; }
+
+.ag-btn--danger { color: var(--ag-bad); border-color: var(--ag-bad-line); background: var(--ag-bad-bg); }
+.ag-btn--danger:hover { background: #fbdedb; }
+
+.ag-btn--quiet { background: none; border-color: transparent; box-shadow: none; color: var(--ag-text-2); }
+.ag-btn--quiet:hover { background: var(--ag-idle-bg); border-color: transparent; }
+
+.ag-btn--sm { padding: .25rem .5rem; font-size: var(--ag-fs-xs); }
+
+/* ------------------------------------------------------------------ */
+/* cards                                                               */
+/* ------------------------------------------------------------------ */
+.ag-card {
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius);
+  box-shadow: var(--ag-shadow);
+}
+.ag-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .625rem .875rem;
+  border-bottom: 1px solid var(--ag-line-soft);
+}
+.ag-card__title { font-size: var(--ag-fs); font-weight: 600; }
+.ag-card__body { padding: .875rem; }
+
+/* ------------------------------------------------------------------ */
+/* visibility markers — client-visible vs internal                     */
+/* ------------------------------------------------------------------ */
+/* The single most important piece of styling in this file. An agent must
+   never have to wonder whether a client can see something, so the two
+   states look nothing alike and always carry both an icon and a word. */
+.ag-vis {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .12rem .4rem .12rem .32rem;
+  border-radius: 3px;
+  font-family: var(--ag-mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.ag-vis svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+.ag-vis--client   { color: var(--ag-info); background: var(--ag-info-bg); border-color: var(--ag-info-line); }
+.ag-vis--internal { color: var(--ag-text-2); background: var(--ag-idle-bg); border-color: var(--ag-idle-line); }
+
+/* ------------------------------------------------------------------ */
+/* status pills                                                        */
+/* ------------------------------------------------------------------ */
+.ag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .15rem .45rem;
+  border-radius: 999px;
+  border: 1px solid;
+  font-size: var(--ag-fs-xs);
+  font-weight: 550;
+  white-space: nowrap;
+}
+.ag-pill--good { color: var(--ag-good); background: var(--ag-good-bg); border-color: var(--ag-good-line); }
+.ag-pill--warn { color: var(--ag-warn); background: var(--ag-warn-bg); border-color: var(--ag-warn-line); }
+.ag-pill--bad  { color: var(--ag-bad);  background: var(--ag-bad-bg);  border-color: var(--ag-bad-line); }
+.ag-pill--idle { color: var(--ag-idle); background: var(--ag-idle-bg); border-color: var(--ag-idle-line); }
+.ag-pill--info { color: var(--ag-info); background: var(--ag-info-bg); border-color: var(--ag-info-line); }
+
+/* ------------------------------------------------------------------ */
+/* errors — agent wording, not client wording                          */
+/* ------------------------------------------------------------------ */
+/* No phone number here. An agent who hits a failure needs to know what
+   broke and be able to try again, not be told to ring the office they
+   are sitting in. */
+.ag-err {
+  display: flex;
+  align-items: flex-start;
+  gap: .625rem;
+  padding: .625rem .75rem;
+  border: 1px solid var(--ag-bad-line);
+  background: var(--ag-bad-bg);
+  border-radius: var(--ag-radius-sm);
+  color: var(--ag-text);
+  font-size: var(--ag-fs-sm);
+}
+.ag-err__body { flex: 1; min-width: 0; }
+.ag-err__msg { font-weight: 550; }
+.ag-err__actions { display: flex; gap: .4rem; margin-top: .5rem; }
+.ag-err__detail {
+  margin-top: .5rem;
+  font-family: var(--ag-mono);
+  font-size: var(--ag-fs-xs);
+  color: var(--ag-text-2);
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  border-radius: 4px;
+  padding: .5rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ag-empty {
+  padding: 1.75rem 1rem;
+  text-align: center;
+  color: var(--ag-text-3);
+  font-size: var(--ag-fs-sm);
+}
+
+.ag-skel {
+  padding: 1rem;
+  color: var(--ag-text-3);
+  font-size: var(--ag-fs-sm);
+}
+
+/* ------------------------------------------------------------------ */
+/* utility                                                             */
+/* ------------------------------------------------------------------ */
+.ag-mono { font-family: var(--ag-mono); }
+.ag-muted { color: var(--ag-text-3); }
+.ag-nowrap { white-space: nowrap; }
+.ag-sronly {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
