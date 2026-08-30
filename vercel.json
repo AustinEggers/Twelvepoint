@@ -56,11 +56,13 @@
     },
 
     {
-      "//": "MUST STAY LAST. Vercel applies every matching rule and a later one",
-      "//2": "wins for the same header name. This block used to sit first, so the",
-      "//3": "/(.*).html rule above overwrote its Cache-Control with 'public' —",
-      "//4": "which permits a shared proxy to store a signed-in client's portal",
-      "//5": "page and hand it to the next person. Verified on the deploy.",
+      "//": "KEEP LAST. Vercel applies every matching header rule in order and",
+      "//2": "a later rule wins for the same header name. If this block sits",
+      "//3": "before /(.*).html, that rule replaces Cache-Control with 'public',",
+      "//4": "which would let a shared proxy store a signed-in client's page.",
+      "//5": "NOT observed on the deploy — an unauthenticated request is bounced",
+      "//6": "by middleware.js and never reaches this HTML, so the header cannot",
+      "//7": "be checked with curl. Ordered defensively for when it is reached.",
       "source": "/portal/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "private, no-store, max-age=0, must-revalidate" },
