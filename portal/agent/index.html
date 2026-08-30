@@ -78,6 +78,13 @@
 
     <p data-ag-error hidden></p>
 
+    <!-- Shown only when the client-name join failed and the list was
+         fetched without it. Better to say so than to show blank names. -->
+    <p class="ag-err" data-ag-degraded hidden>
+      <span class="ag-err__body">Client names could not be loaded, so that column is empty.
+      Everything else on this page is current.</span>
+    </p>
+
     <div data-ag-body hidden>
 
       <!-- The four numbers an agent would ask for out loud. Live counts

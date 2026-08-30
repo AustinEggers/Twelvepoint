@@ -1020,8 +1020,28 @@ window.AG = (function () {
         }
       });
 
-      return sb.from("transactions")
-        .select("*, client:profiles!transactions_client_profile_fkey(full_name)")
+      /* The client's name comes from an embedded profile. That join is the
+         most fragile part of this query — it depends on a foreign key AND
+         on the profiles policy letting the caller read the row — so a
+         failure falls back to the same query without it. Losing the name
+         column is a bad day; losing the whole transaction list because a
+         name would not join is a broken tool. */
+      function fetchRows() {
+        return sb.from("transactions")
+          .select("*, client:profiles!transactions_client_profile_fkey(full_name)")
+          .then(function (res) {
+            if (!res.error) return res;
+            if (window.console) {
+              console.warn("[agent] client name join failed, retrying without it", res.error);
+            }
+            return sb.from("transactions").select("*").then(function (bare) {
+              if (!bare.error) bare.degraded = true;
+              return bare;
+            });
+          });
+      }
+
+      return fetchRows()
         .then(function (res) {
           var body = dom.q("[data-ag-body]");
           if (res.error) {
@@ -1033,6 +1053,19 @@ window.AG = (function () {
           if (body) body.hidden = false;
           paintKpis();
           paintTable();
+          if (res.degraded) {
+            var note = dom.q("[data-ag-degraded]");
+            if (note) note.hidden = false;
+          }
+        })
+        /* Without this, anything thrown while painting becomes an
+           unhandled rejection: the table keeps saying "Loading…" and no
+           error is ever shown. Silence is the worst possible failure mode
+           for a page an agent is trying to work from. */
+        .catch(function (e) {
+          AG.err.show(host, e, "Transactions couldn’t load.", load);
+          var body = dom.q("[data-ag-body]");
+          if (body) body.hidden = true;
         });
     }
 
@@ -1041,8 +1074,18 @@ window.AG = (function () {
       init: function (client, session, role) {
         sb = client;
         if (!dom.q("[data-ag-dash]")) return;
-        buildControls();
-        load();
+
+        /* Anything thrown here used to take the whole page with it,
+           including the New Transaction toggle wired below, which is
+           exactly the pair of symptoms a silent throw produces: a table
+           stuck on "Loading…" and a button that does nothing. */
+        try {
+          buildControls();
+          load();
+        } catch (e) {
+          AG.err.show(dom.q("[data-ag-error]"), e,
+                      "The dashboard failed to start.", function () { location.reload(); });
+        }
 
         /* The old create form is still the only way to make a transaction
            until the wizard lands. Kept working rather than removed. */
