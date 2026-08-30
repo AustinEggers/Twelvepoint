@@ -502,3 +502,218 @@ body.agentui {
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* ------------------------------------------------------------------ */
+/* KPI row                                                             */
+/* ------------------------------------------------------------------ */
+/* Four numbers, and they are the four an agent would ask for out loud.
+   auto-fit rather than a fixed four so they reflow rather than squash. */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: .625rem;
+  margin-bottom: .875rem;
+}
+.kpi {
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius);
+  padding: .625rem .75rem;
+  box-shadow: var(--ag-shadow);
+  border-left: 3px solid var(--ag-line);
+}
+.kpi__n {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.kpi__l {
+  display: block;
+  margin-top: .1rem;
+  font-size: var(--ag-fs-xs);
+  color: var(--ag-text-3);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+/* Colour arrives only when the number is non-zero — a dashboard that is
+   always amber teaches an agent to stop looking at it. */
+.kpi--warn { border-left-color: var(--ag-warn); }
+.kpi--warn .kpi__n { color: var(--ag-warn); }
+.kpi--bad  { border-left-color: var(--ag-bad); }
+.kpi--bad  .kpi__n { color: var(--ag-bad); }
+
+/* ------------------------------------------------------------------ */
+/* filter + search bar                                                 */
+/* ------------------------------------------------------------------ */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin-bottom: .625rem;
+}
+.chips { display: flex; gap: .25rem; flex-wrap: wrap; }
+.chip {
+  padding: .3rem .625rem;
+  border: 1px solid var(--ag-line);
+  border-radius: 999px;
+  background: var(--ag-surface);
+  color: var(--ag-text-2);
+  font: inherit;
+  font-size: var(--ag-fs-sm);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chip:hover { border-color: #cdd3da; color: var(--ag-text); }
+.chip--on {
+  background: var(--ag-text);
+  border-color: var(--ag-text);
+  color: #fff;
+  font-weight: 500;
+}
+
+.toolbar__grow { flex: 1 1 12rem; min-width: 10rem; }
+.searchwrap { position: relative; display: block; }
+.searchwrap svg {
+  position: absolute;
+  left: .55rem; top: 50%;
+  transform: translateY(-50%);
+  width: 15px; height: 15px;
+  stroke: var(--ag-text-3);
+  fill: none; stroke-width: 1.7;
+  pointer-events: none;
+}
+.searchwrap input {
+  width: 100%;
+  padding: .4rem .625rem .4rem 1.9rem;
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-sm);
+  background: var(--ag-surface);
+  font: inherit;
+  font-size: var(--ag-fs-sm);
+  color: var(--ag-text);
+}
+.searchwrap input:focus-visible { outline: 2px solid var(--ag-info); outline-offset: -1px; }
+
+.sortwrap {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: var(--ag-fs-sm);
+  color: var(--ag-text-3);
+}
+.sortwrap select {
+  padding: .35rem 1.4rem .35rem .5rem;
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-sm);
+  background: var(--ag-surface);
+  font: inherit;
+  font-size: var(--ag-fs-sm);
+  color: var(--ag-text);
+}
+
+/* ------------------------------------------------------------------ */
+/* transaction table                                                   */
+/* ------------------------------------------------------------------ */
+/* Scrolls inside its own box rather than pushing the page sideways. */
+.txwrap {
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius);
+  box-shadow: var(--ag-shadow);
+  overflow-x: auto;
+}
+.txtable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ag-fs-sm);
+  min-width: 62rem;
+}
+.txtable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--ag-sunken);
+  border-bottom: 1px solid var(--ag-line);
+  padding: .5rem .625rem;
+  text-align: left;
+  font-size: var(--ag-fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ag-text-3);
+  white-space: nowrap;
+}
+.txtable td {
+  padding: .5rem .625rem;
+  border-bottom: 1px solid var(--ag-line-soft);
+  vertical-align: middle;
+}
+.txtable tbody tr:last-child td { border-bottom: 0; }
+
+.tx { cursor: pointer; }
+.tx:hover td { background: #f8fafc; }
+.tx:focus-visible { outline: 2px solid var(--ag-info); outline-offset: -2px; }
+/* A left edge rather than a tinted row: the tint would fight the status
+   pills, which are the things actually carrying meaning. */
+.tx--warn td:first-child { box-shadow: inset 3px 0 0 var(--ag-warn); }
+.tx--bad  td:first-child { box-shadow: inset 3px 0 0 var(--ag-bad); }
+
+.tx__client { min-width: 9rem; }
+.tx__name { display: block; font-weight: 550; color: var(--ag-text); }
+.tx__file { display: block; font-family: var(--ag-mono); font-size: 10px; color: var(--ag-text-3); }
+.tx__addr { max-width: 18rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tx__deadline { min-width: 10rem; }
+.tx__dl-label { display: block; font-weight: 500; }
+.tx__dl-when { display: block; font-size: var(--ag-fs-xs); }
+.tx__dl-when--idle { color: var(--ag-text-3); }
+.tx__dl-when--warn { color: var(--ag-warn); font-weight: 550; }
+.tx__dl-when--bad  { color: var(--ag-bad);  font-weight: 550; }
+
+/* ------------------------------------------------------------------ */
+/* the interim create panel                                            */
+/* ------------------------------------------------------------------ */
+/* The old form, kept working until the wizard replaces it. Deliberately
+   plain — there is no point styling something being thrown away. */
+.newpanel { margin-top: 1rem; }
+.newpanel .form { margin-top: .75rem; }
+
+@media (max-width: 60rem) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .toolbar__grow { flex-basis: 100%; order: -1; }
+}
+
+/* The interim form still uses site.css form controls. Neutralise the
+   worst of the brochure styling so it does not read as a marketing call
+   to action sitting inside a dashboard. Goes away with the wizard. */
+.agentui .newpanel .btn {
+  background: var(--ag-text);
+  border: 1px solid var(--ag-text);
+  color: #fff;
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-sm);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: .45rem .9rem;
+  border-radius: var(--ag-radius-sm);
+}
+.agentui .newpanel .btn:hover { background: #000; }
+.agentui .newpanel .btn__arrow { display: none; }
+.agentui .newpanel label,
+.agentui .newpanel .field > label {
+  font-size: var(--ag-fs-xs);
+  letter-spacing: .04em;
+  color: var(--ag-text-3);
+}
+.agentui .newpanel input,
+.agentui .newpanel select {
+  font-size: var(--ag-fs-sm);
+  padding: .4rem .55rem;
+  border-radius: var(--ag-radius-sm);
+  border: 1px solid var(--ag-line);
+  background: var(--ag-surface);
+}

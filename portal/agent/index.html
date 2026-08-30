@@ -18,20 +18,29 @@
 </head>
 
 <!-- ==========================================================================
-     AGENT — TRANSACTIONS
+     AGENT — TRANSACTIONS DASHBOARD
 
-     The same list component the client side uses, and deliberately the same
-     query: it sends no agent id. Row Level Security resolves auth.uid() and
-     returns the files assigned to whoever is asking. A client signing in
-     sees their own; an agent sees their book. One query, two answers,
-     decided by the database rather than by this page.
+     THIS PAGE NO LONGER SHARES A RENDERER WITH THE CLIENT PORTAL.
+
+     It used to hang off [data-txn-list], the same hook portal.js uses to
+     draw the client's list of files. That was neat while both sides wanted
+     the same three cards, and wrong the moment this side wanted KPIs,
+     filters and a table. Sharing it would have meant every change here
+     landing on a client's screen too.
+
+     So the hook is [data-ag-dash] and the renderer is AG.dash in agent.js.
+     portal.js and the client page are untouched.
+
+     The QUERY is still deliberately the same shape: it sends no agent id.
+     Row Level Security resolves auth.uid() and returns the files that
+     belong to whoever is asking — an agent sees their book, an admin sees
+     the brokerage. One query, two answers, decided by the database.
      ========================================================================== -->
 
 <body class="portalbody agentui">
 <a class="skip" href="#main">Skip to content</a>
 
-<div class="app" data-portal-page>
-
+<div class="app" data-portal-page data-ag-dash>
   <nav class="rail" aria-label="Portal">
     <a class="rail__brand" href="/index.html" aria-label="TwelvePoint Realty Group — home">
       <img src="/assets/mark-cream.png" width="648" height="112" alt="TwelvePoint Realty Group">
@@ -54,27 +63,100 @@
   </nav>
 
   <main class="appmain" id="main">
-    <div class="panel">
-      <h1 class="panel__title">Transactions</h1>
-      <p class="panel__count" data-txn-count></p>
 
-      <div data-txn-list>
-        <p class="skeleton">Loading…</p>
+    <header class="ag-head">
+      <div>
+        <h1 class="ag-head__title">Transactions</h1>
+        <p class="ag-head__sub" data-ag-count>Loading…</p>
+      </div>
+      <div class="ag-head__actions">
+        <button class="ag-btn ag-btn--primary" type="button"
+                data-ag-newtoggle data-staff-only hidden
+                aria-expanded="false">+ New Transaction</button>
+      </div>
+    </header>
+
+    <p data-ag-error hidden></p>
+
+    <div data-ag-body hidden>
+
+      <!-- The four numbers an agent would ask for out loud. Live counts
+           exclude archived and closed files; "needs attention" and
+           "overdue" are derived by AG.rules, never stored. -->
+      <section class="kpis" aria-label="Summary">
+        <div class="kpi" data-kpi="active">
+          <span class="kpi__n">0</span><span class="kpi__l">Active</span>
+        </div>
+        <div class="kpi" data-kpi="month">
+          <span class="kpi__n">0</span><span class="kpi__l">Closing this month</span>
+        </div>
+        <div class="kpi" data-kpi="attention">
+          <span class="kpi__n">0</span><span class="kpi__l">Needs attention</span>
+        </div>
+        <div class="kpi" data-kpi="overdue">
+          <span class="kpi__n">0</span><span class="kpi__l">Overdue</span>
+        </div>
+      </section>
+
+      <div class="toolbar">
+        <div class="chips" data-ag-filters role="group" aria-label="Filter transactions"></div>
+        <div class="toolbar__grow">
+          <label class="searchwrap">
+            <span class="ag-sronly">Search transactions</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM13.5 13.5L18 18"/></svg>
+            <input type="search" data-ag-search autocomplete="off"
+                   placeholder="Search client, property, file number…">
+          </label>
+        </div>
+        <div class="sortwrap">
+          <label for="ag-sort">Sort</label>
+          <select id="ag-sort" data-ag-sort></select>
+        </div>
       </div>
 
-      <!-- Agents and admins both. The client is named by email rather than
-           chosen from a list: a dropdown would mean letting every agent read
-           every profile in the brokerage, which is a bigger door than this
-           needs. The database function looks up that one address and refuses
-           if the caller is not staff. -->
-      <section class="admin mt-xl" data-staff-only hidden>
-        <h2 class="sect">New transaction</h2>
-        <p class="note">
-          The client needs an account first &mdash; they create one themselves
-          from the portal login. Once you add the file here, they will see it
-          the next time they sign in.
-        </p>
+      <!-- Scrolls inside its own box. The page body never scrolls sideways. -->
+      <div class="txwrap">
+        <table class="txtable">
+          <thead>
+            <tr>
+              <th scope="col">Client</th>
+              <th scope="col">Property</th>
+              <th scope="col">Type</th>
+              <th scope="col">Stage</th>
+              <th scope="col">Closing</th>
+              <th scope="col">Next deadline</th>
+              <th scope="col">Attention</th>
+              <th scope="col">Agent</th>
+              <th scope="col">Updated</th>
+            </tr>
+          </thead>
+          <tbody data-ag-rows>
+            <tr><td class="ag-skel" colspan="9">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
 
+      <!-- INTERIM. The five-step wizard replaces this next. Kept working
+           rather than removed, so creating a transaction never stops
+           being possible mid-rebuild. Still driven by portal.js's
+           initNewTransaction and the original create_transaction RPC. -->
+      <!-- No data-staff-only here: portal.js reveals everything carrying it,
+           which would leave this panel permanently open. The TOGGLE is the
+           staff-gated element; the panel stays shut until it is pressed. -->
+      <section class="newpanel" data-ag-newpanel hidden>
+        <div class="ag-card">
+          <div class="ag-card__head">
+            <h2 class="ag-card__title">New transaction</h2>
+            <span class="ag-vis ag-vis--internal">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7h8v6H4zM6 7V5a2 2 0 0 1 4 0v2"/></svg>
+              Interim form
+            </span>
+          </div>
+          <div class="ag-card__body">
+            <p class="ag-muted" style="margin:0 0 .75rem;font-size:var(--ag-fs-sm)">
+              The client needs an account first &mdash; they create one themselves
+              from the portal login. The step-by-step version of this is next.
+            </p>
         <form class="form form--two" data-newtxn-form novalidate>
           <div class="field">
             <label for="nt-client">Client email</label>
@@ -110,7 +192,10 @@
             <button class="btn" type="submit">Create transaction <span class="btn__arrow" aria-hidden="true">&rarr;</span></button>
           </div>
         </form>
+          </div>
+        </div>
       </section>
+
     </div>
   </main>
 

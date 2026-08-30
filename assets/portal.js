@@ -408,7 +408,19 @@
         $$("[data-portal-rolelabel]").forEach(function (n) { n.textContent = "Admin"; });
       }
 
-      if ($("[data-staff-detail]")) initStaffDetail(session);
+      /* The agent dashboard draws itself. It hangs off [data-ag-dash],
+         which exists only on pages under /portal/agent/, so nothing here
+         changes for the client portal — [data-txn-list] below still
+         reaches renderList exactly as before.
+
+         Guarded on window.AG so that if agent.js fails to load, this page
+         degrades to nothing rather than throwing and taking the sidebar
+         and the logout button down with it. */
+      if (window.AG && window.AG.dash && $("[data-ag-dash]")) {
+        window.AG.dash.init(sb, session, role);
+        initNewTransaction(session, role);
+      }
+      else if ($("[data-staff-detail]")) initStaffDetail(session);
       else if ($("[data-portal-detail]")) loadDetail(session);
       else if ($("[data-leads-list]")) initLeads(session, role);
       else if ($("[data-team-list]")) initTeam(session, role);
