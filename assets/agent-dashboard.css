@@ -4,6 +4,11 @@
    LOADED ONLY BY PAGES UNDER /portal/agent/. Never by the client portal,
    never by the marketing site.
 
+   It lives in /assets/ rather than beside those pages because middleware.js
+   matches /portal/:path* and would gate the stylesheet itself — verifying a
+   JWT to serve a CSS file, and rendering the page unstyled the moment a
+   token is stale. Static assets belong outside the gate.
+
    Everything here is scoped under .agentui, which sits on <body> on those
    pages and nowhere else. Two reasons for the belt and braces: the file
    being loaded selectively is easy to get wrong later by copying a <head>
