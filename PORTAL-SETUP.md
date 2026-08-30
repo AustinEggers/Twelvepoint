@@ -250,3 +250,19 @@ Google returns people to Supabase and Supabase refuses to forward them on.
 
 Then flip `enableGoogle` to `true`. Nothing else changes: the same trigger grants
 `client` whether the account arrives by password or by Google.
+
+## vercel.json — two things that will bite
+
+**It is strict JSON and it is schema-validated.** No `//` comments, and no
+extra keys inside a headers entry either — only `source`, `headers`, `has`
+and `missing` are allowed. A stray key does not warn, it fails the build,
+and the site keeps serving the last good deployment while every push
+quietly errors. If pushes stop appearing on the live site, check the
+Deployments tab before you check your code.
+
+**Header rule order matters.** Vercel applies every rule that matches and a
+later rule wins for the same header name. The `/portal/(.*)` block must
+stay LAST in the `headers` array: if it sits above `/(.*)\.html`, that rule
+overwrites its `Cache-Control` with `public`, which would let a shared
+proxy store a signed-in client's transaction page. There is no comment in
+the file saying so, because the file cannot carry one.
