@@ -1005,9 +1005,33 @@ window.AG = (function () {
     }
 
     /* ---- load ----------------------------------------------------------- */
+
+    /* The subtitle doubles as a progress readout. A page that hangs on a
+       single unchanging "Loading…" tells nobody anything — not the agent
+       looking at it and not whoever they describe it to. Each stage names
+       itself, so a stall is reported as the stage it stalled in. */
+    function say(msg) {
+      var el = dom.q("[data-ag-count]");
+      if (el) el.textContent = msg;
+      if (window.console) console.log("[agent] " + msg);
+    }
+
     function load() {
       var host = dom.q("[data-ag-error]");
       if (host) host.hidden = true;
+      say("Requesting transactions…");
+
+      /* A request that never settles is indistinguishable from a broken
+         page. Give it a deadline and say so out loud when it passes. */
+      var settled = false;
+      setTimeout(function () {
+        if (settled) return;
+        say("Request timed out.");
+        AG.err.show(host, { code: "TIMEOUT", message:
+          "The database did not respond within 15 seconds. This is usually a " +
+          "network problem or a Supabase project that is paused." },
+          "Transactions couldn’t load.", load);
+      }, 15000);
 
       /* Agent names come from agent_options() rather than a join, because
          transactions.agent_id has no foreign key into profiles that
@@ -1043,12 +1067,15 @@ window.AG = (function () {
 
       return fetchRows()
         .then(function (res) {
+          settled = true;
           var body = dom.q("[data-ag-body]");
           if (res.error) {
+            say("Request failed.");
             AG.err.show(host, res.error, "Transactions couldn’t load.", load);
             if (body) body.hidden = true;
             return;
           }
+          say("Received " + ((res.data || []).length) + " rows, drawing…");
           ROWS = res.data || [];
           if (body) body.hidden = false;
           paintKpis();
@@ -1063,6 +1090,8 @@ window.AG = (function () {
            error is ever shown. Silence is the worst possible failure mode
            for a page an agent is trying to work from. */
         .catch(function (e) {
+          settled = true;
+          say("Failed while drawing the table.");
           AG.err.show(host, e, "Transactions couldn’t load.", load);
           var body = dom.q("[data-ag-body]");
           if (body) body.hidden = true;
@@ -1079,10 +1108,13 @@ window.AG = (function () {
            including the New Transaction toggle wired below, which is
            exactly the pair of symptoms a silent throw produces: a table
            stuck on "Loading…" and a button that does nothing. */
+        say("Starting…");
         try {
           buildControls();
+          say("Controls built.");
           load();
         } catch (e) {
+          say("Failed to start.");
           AG.err.show(dom.q("[data-ag-error]"), e,
                       "The dashboard failed to start.", function () { location.reload(); });
         }
