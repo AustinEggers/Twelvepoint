@@ -722,3 +722,226 @@ body.agentui {
   border: 1px solid var(--ag-line);
   background: var(--ag-surface);
 }
+
+/* ==================================================================== */
+/* COMPATIBILITY LAYER                                                   */
+/* ==================================================================== */
+/* Contracts, Marketing, Vendor List, Team, Leads and the transaction
+   detail page still use the shared classes from portal.css — .panel,
+   .sect, .contact, .tcard and so on. The sidebar on those pages is
+   already the new one, so they were reading as half-converted: software
+   navigation wrapped around a cream brochure.
+
+   Rather than rewrite six pages of markup, the shared classes are
+   re-skinned HERE, under .agentui. portal.css is not touched and the
+   client portal keeps every one of these looking exactly as it did.
+
+   When a page is rebuilt properly it stops needing this section. Nothing
+   below is load-bearing; it is a bridge.                                */
+
+/* ---- panels become plain regions, not cream cards ------------------ */
+.agentui .panel {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+.agentui .panel__title {
+  font-family: var(--ag-ui);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ag-text);
+  margin: 0;
+}
+.agentui .panel__count,
+.agentui .panel__sub {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-sm);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ag-text-3);
+  margin: .15rem 0 1rem;
+}
+
+/* ---- section headings ---------------------------------------------- */
+.agentui .sect {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-xs);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ag-text-3);
+  border: 0;
+  padding: 0;
+  margin: 1.25rem 0 .5rem;
+}
+
+/* ---- cards ---------------------------------------------------------- */
+.agentui .tcard,
+.agentui .contact,
+.agentui .card {
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius);
+  box-shadow: var(--ag-shadow);
+}
+.agentui .tcard__head {
+  padding: .625rem .875rem;
+  border-bottom: 1px solid var(--ag-line-soft);
+  background: transparent;
+}
+.agentui .tcard__title {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ag-text);
+}
+
+/* ---- the vendor / contact cards ------------------------------------- */
+.agentui .contact { padding: .75rem .875rem; }
+.agentui .contact__role {
+  font-family: var(--ag-mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ag-gold);
+}
+.agentui .contact__co {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs);
+  font-weight: 600;
+  color: var(--ag-text);
+}
+.agentui .contact__body,
+.agentui .contact__where {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-sm);
+  color: var(--ag-text-2);
+}
+
+/* ---- notes ---------------------------------------------------------- */
+/* The brochure note is a cream slab with a gold rule. In here it is a
+   quiet informational strip; the loud version is reserved for .ag-err,
+   so that colour still means something. */
+.agentui .note {
+  background: var(--ag-info-bg);
+  border: 1px solid var(--ag-info-line);
+  border-left: 3px solid var(--ag-info);
+  border-radius: var(--ag-radius-sm);
+  padding: .55rem .75rem;
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-sm);
+  color: var(--ag-text);
+}
+.agentui .note--err {
+  background: var(--ag-bad-bg);
+  border-color: var(--ag-bad-line);
+  border-left-color: var(--ag-bad);
+}
+
+/* ---- links ---------------------------------------------------------- */
+.agentui .textlink {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-sm);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ag-info);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.agentui .textlink:hover { color: #17457c; }
+
+/* ---- form controls --------------------------------------------------- */
+.agentui .f__label,
+.agentui .field > label {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-xs);
+  font-weight: 500;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  color: var(--ag-text-3);
+}
+.agentui .f__in,
+.agentui .field input,
+.agentui .field select,
+.agentui .field textarea {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-sm);
+  padding: .4rem .55rem;
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-sm);
+  background: var(--ag-surface);
+  color: var(--ag-text);
+}
+.agentui .f__in:focus-visible,
+.agentui .field input:focus-visible,
+.agentui .field select:focus-visible {
+  outline: 2px solid var(--ag-info);
+  outline-offset: -1px;
+}
+
+/* ---- tags and pills already in the markup ---------------------------- */
+.agentui .tag {
+  font-family: var(--ag-mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: .12rem .4rem;
+  border-radius: 3px;
+  border: 1px solid var(--ag-idle-line);
+  background: var(--ag-idle-bg);
+  color: var(--ag-text-2);
+}
+.agentui .tag--client {
+  color: var(--ag-info);
+  background: var(--ag-info-bg);
+  border-color: var(--ag-info-line);
+}
+
+/* ---- generic buttons on the remaining pages -------------------------- */
+.agentui .appmain .btn {
+  background: var(--ag-text);
+  border: 1px solid var(--ag-text);
+  color: #fff;
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-sm);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: .45rem .9rem;
+  border-radius: var(--ag-radius-sm);
+}
+.agentui .appmain .btn:hover { background: #000; }
+.agentui .appmain .btn__arrow { display: none; }
+
+/* ---- empty states ---------------------------------------------------- */
+/* The brochure version is a big centred serif announcement inside a gold
+   dashed box. In a dashboard an empty section is not an event — it is a
+   row of information that happens to be blank, and it should take up
+   about as much room as that deserves. */
+.agentui .empty {
+  padding: 1rem .875rem;
+  text-align: left;
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius);
+  background: var(--ag-surface);
+  color: var(--ag-text-2);
+}
+.agentui .empty h3 {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs);
+  font-weight: 600;
+  color: var(--ag-text);
+  margin: 0 0 .2rem;
+}
+.agentui .empty p {
+  font-family: var(--ag-ui);
+  font-size: var(--ag-fs-sm);
+  color: var(--ag-text-2);
+  margin: 0;
+  max-width: 68ch;
+}
