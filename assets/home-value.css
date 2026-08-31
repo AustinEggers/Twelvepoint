@@ -1,0 +1,350 @@
+/* =====================================================================
+   home-value.css — the valuation landing page only.
+
+   Loaded by home-value.html and nothing else, after site.css.
+
+   WHY A SEPARATE FILE
+   This page takes paid traffic and is the one page on the site with a
+   single job: get a homeowner to ask for their number. That pulls it
+   away from the brochure layout the rest of the site uses — a form card
+   in the hero, denser sections, a sticky bar on phones. None of that
+   belongs in site.css, where it would load on twelve pages that do not
+   want it and could not use it.
+
+   It EXTENDS site.css rather than overriding it. The palette, type scale,
+   .btn, .faq accordion and .wizard all come from there unchanged.
+   ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* hero: one full screen, copy left, form right                        */
+/* ------------------------------------------------------------------ */
+/* The whole first screen is the hero. Nothing of the cream section
+   below should be visible before the visitor scrolls.
+
+   svh, not vh. On phones vh is the viewport WITH the browser chrome
+   hidden, so a 100vh hero is taller than the screen and pushes its own
+   last line — usually the CTA — under the address bar. svh is the small
+   viewport, which is the honest one.
+
+   min-height, never height: on a phone the stacked column is taller than
+   one screen and must be allowed to grow. Cropping the form to hold a
+   number would defeat the point of the page. */
+.hvx-hero {
+  min-height: 100vh;                 /* fallback for older engines */
+  min-height: 100svh;
+  align-items: center;
+}
+/* Top padding clears the fixed masthead so centred content is centred in
+   the space BELOW the navigation rather than behind it. */
+.hvx-hero .lhero__inner {
+  padding-block: clamp(6.5rem, 15vh, 9rem) clamp(3rem, 7vh, 4.5rem);
+}
+
+/* The gradient in site.css is weighted for text sitting at the bottom of
+   the hero. Content is centred here, so the dark is rebalanced towards
+   the middle — enough for white text, not so much that the house
+   disappears behind a grey wash. */
+.hvx-hero .lhero__media::after {
+  background:
+    linear-gradient(to right, rgba(13,13,10,.82) 0%, rgba(13,13,10,.55) 45%, rgba(13,13,10,.30) 100%),
+    linear-gradient(to top, rgba(13,13,10,.70) 0%, rgba(13,13,10,.25) 40%, rgba(13,13,10,.35) 100%);
+}
+/* Hold the house rather than the sky when the viewport is tall and
+   narrow, which is where a cover-fitted landscape photo loses its
+   subject first. */
+.hvx-hero .lhero__media img { object-position: 50% 62%; }
+
+/* Roughly 55 / 38 with the gap between, so the headline stays the
+   largest thing on the screen and the card does not dominate it. */
+.hvx-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+  max-width: 78rem;
+  margin-inline: auto;
+}
+@media (max-width: 60rem) {
+  .hvx-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .hvx-hero .lhero__inner { padding-block: clamp(5.5rem, 13vh, 7rem) clamp(2.5rem, 6vh, 3.5rem); }
+  /* Stacked, the dark needs to be even top to bottom rather than
+     weighted to one side. */
+  .hvx-hero .lhero__media::after {
+    background: linear-gradient(to bottom, rgba(13,13,10,.78) 0%, rgba(13,13,10,.55) 45%, rgba(13,13,10,.80) 100%);
+  }
+}
+
+.hvx-eyebrow {
+  font-family: var(--data);
+  font-size: .78rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold-lit);
+  margin: 0 0 1rem;
+}
+.hvx-hero h1 {
+  font-size: clamp(2.3rem, 5vw, 3.9rem);
+  line-height: 1.04;
+  margin: 0 0 1.1rem;
+}
+.hvx-hero__lead {
+  color: #E8E0D4;
+  max-width: 46ch;
+  margin: 0 0 1.6rem;
+}
+
+/* Trust points. Four short claims, each one true and checkable — no
+   awards, no numbers we cannot stand behind. */
+.hvx-trust { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+.hvx-trust li {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  color: #E8E0D4;
+  font-size: .95rem;
+  line-height: 1.45;
+}
+.hvx-trust svg {
+  flex: none;
+  width: 17px; height: 17px;
+  margin-top: .18rem;
+  stroke: var(--gold-lit);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- the form card ------------------------------------------------- */
+/* Smaller and warmer than the first attempt, which was a big white
+   rectangle with a dark slab inside it. The hierarchy here comes from
+   spacing, type and the gold button — not from boxes inside boxes. */
+.hvx-card {
+  background: var(--paper-warm, #F7F2E9);
+  border: 1px solid color-mix(in srgb, var(--gold) 22%, transparent);
+  border-radius: 4px;
+  padding: clamp(1.4rem, 2.2vw, 1.85rem);
+  box-shadow: 0 18px 50px rgba(13, 13, 10, .34), 0 2px 6px rgba(13, 13, 10, .16);
+  color: var(--ink);
+  max-width: 27rem;
+  margin-left: auto;              /* sit to the right of the gap */
+  width: 100%;
+}
+@media (max-width: 60rem) {
+  .hvx-card { margin-inline: auto; max-width: 30rem; }
+}
+
+.hvx-card__h {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.35rem, 2.1vw, 1.65rem);
+  line-height: 1.15;
+  margin: 0 0 .35rem;
+  color: var(--ink);
+}
+.hvx-card__sub {
+  margin: 0 0 1.4rem;             /* breathing room before the field */
+  font-size: .9rem;
+  color: var(--stone-dim);
+}
+
+/* ---- neutralise the shared .hv-start box --------------------------- */
+/* site.css styles .hv-start as a dark translucent slab, because it was
+   built to sit straight on the hero photograph. Dropped inside a cream
+   card it reads as a heavy grey rectangle — a form inside a form.
+   Overridden HERE ONLY, scoped to this card, so the shared rule stays
+   correct wherever else it is used. */
+.hvx-card .hv-start {
+  margin: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  backdrop-filter: none;
+}
+
+.hvx-card .hv-start__label,
+.hvx-card label {
+  display: block;
+  font-family: var(--data);
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--stone-dim);
+  margin-bottom: .45rem;
+}
+
+/* Button under the input, not beside it. The shared rule goes
+   side-by-side above 34rem, which halves the width of both. */
+.hvx-card .hv-start__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .6rem;
+}
+
+.hvx-card .hv-start input,
+.hvx-card input[type="text"] {
+  width: 100%;
+  padding: .9rem 1rem;
+  font-family: var(--body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: #FFFDF9;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: 3px;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.hvx-card .hv-start input::placeholder { color: color-mix(in srgb, var(--stone-dim) 80%, transparent); }
+.hvx-card .hv-start input:focus-visible,
+.hvx-card input[type="text"]:focus-visible {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 20%, transparent);
+}
+
+/* The strongest thing on the hero, deliberately. */
+.hvx-card .btn {
+  width: 100%;
+  justify-content: center;
+  white-space: nowrap;
+  padding-block: .9rem;
+  border-radius: 3px;
+  letter-spacing: .12em;
+}
+
+.hvx-card__note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  margin: .9rem 0 0;
+  font-size: .76rem;
+  color: var(--stone-dim);
+}
+.hvx-card__note svg {
+  width: 12px; height: 12px;
+  flex: none;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+}
+/* ------------------------------------------------------------------ */
+/* compact three-up cards                                              */
+/* ------------------------------------------------------------------ */
+.hvx-three {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+}
+.hvx-three__i { border-top: 2px solid var(--gold); padding-top: 1rem; }
+.hvx-three__t {
+  font-family: var(--data);
+  font-size: .76rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0 0 .5rem;
+}
+.hvx-three__d { margin: 0; font-size: .95rem; color: var(--stone-dim); line-height: 1.55; }
+.band--dark .hvx-three__t { color: var(--paper); }
+.band--dark .hvx-three__d { color: var(--stone); }
+
+/* ------------------------------------------------------------------ */
+/* the nine value factors                                              */
+/* ------------------------------------------------------------------ */
+/* Compact on purpose. Nine full-size cards would be another screen and a
+   half of scrolling on a page that is already too long. */
+.hvx-factors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: clamp(1.1rem, 2.4vw, 2rem) clamp(1.5rem, 3vw, 2.75rem);
+}
+.hvx-factor { display: flex; gap: .8rem; align-items: flex-start; }
+.hvx-factor svg {
+  flex: none;
+  width: 21px; height: 21px;
+  margin-top: .15rem;
+  stroke: var(--gold-lit);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hvx-factor__t {
+  font-size: 1rem;
+  font-family: var(--body);
+  font-weight: 500;
+  color: var(--paper);
+  margin: 0 0 .25rem;
+}
+.hvx-factor__d { margin: 0; font-size: .9rem; color: var(--stone); line-height: 1.55; }
+
+/* ------------------------------------------------------------------ */
+/* local market prose                                                  */
+/* ------------------------------------------------------------------ */
+.hvx-prose { max-width: 60ch; }
+.hvx-prose p { margin: 0 0 1.1rem; line-height: 1.7; color: var(--stone-dim); }
+.hvx-prose p:last-child { margin-bottom: 0; }
+.hvx-prose strong { color: var(--ink); font-weight: 500; }
+
+.hvx-areas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: .9rem 1.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: var(--rule);
+}
+.hvx-area__n { font-size: .98rem; color: var(--ink); margin: 0 0 .2rem; font-weight: 500; }
+.hvx-area__d { font-size: .86rem; color: var(--stone-dim); margin: 0; line-height: 1.5; }
+
+/* ------------------------------------------------------------------ */
+/* how it works — one section, three steps                             */
+/* ------------------------------------------------------------------ */
+.hvx-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
+  counter-reset: hvstep;
+}
+.hvx-step { position: relative; padding-top: 2.6rem; }
+.hvx-step::before {
+  counter-increment: hvstep;
+  content: "0" counter(hvstep);
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: var(--data);
+  font-size: 1.5rem;
+  color: var(--gold);
+  letter-spacing: .04em;
+}
+.hvx-step__t {
+  font-family: var(--data);
+  font-size: .78rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin: 0 0 .5rem;
+}
+.hvx-step__d { margin: 0; color: var(--stone-dim); font-size: .95rem; line-height: 1.6; }
+
+/* ------------------------------------------------------------------ */
+/* mid-page call to action                                             */
+/* ------------------------------------------------------------------ */
+/* Every couple of sections the visitor gets a way back to the form
+   without scrolling to find it. Same wording, same destination — one
+   conversion goal, not competing ones. */
+.hvx-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  background: color-mix(in srgb, var(--gold) 9%, transparent);
+  border-left: 3px solid var(--gold);
+}
+.hvx-cta__t { margin: 0 0 .35rem; font-size: clamp(1.2rem, 2.4vw, 1.6rem); }
+.hvx-cta__d { margin: 0; color: var(--stone-dim); font-size: .95rem; max-width: 52ch; }
+

@@ -742,6 +742,14 @@
         done.appendChild(h);
         done.appendChild(p);
         form.parentNode.replaceChild(done, form);
+
+          /* Announce it AFTER the server confirmed the lead was stored,
+             not on submit. Anything listening — conversion tracking,
+             mostly — then counts leads that actually exist rather than
+             attempts that may have failed. */
+          document.dispatchEvent(new CustomEvent("tp:lead", {
+            detail: { formType: formType, form: key }
+          }));
       }).catch(function () {
         sending = false;
         if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = originalLabel; }
@@ -749,4 +757,115 @@
       });
     });
   });
+
+  /* ==================================================================== */
+  /* HOME VALUE LANDING PAGE                                              */
+  /* ==================================================================== */
+  /* Runs only where the markers exist, so every other page skips it
+     entirely. Four small jobs; none of them touch the existing wizard,
+     the dialog, or the lead posting, all of which already worked.
+
+     1. a sticky call to action on phones
+     2. contextual buttons that open the same form rather than a new one
+     3. a place for an address autocomplete provider to be added later
+     4. conversion-tracking hooks with no vendor and no IDs invented   */
+  (function homeValueLanding() {
+    var card = document.querySelector("[data-hvx-card]");
+    if (!card) return;                       /* not this page */
+
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* The sticky call to action is NOT built here. site.css already has
+       .stickycta and site.js already drives it on this page — it works on
+       desktop as well as phones and carries a line of text, which is more
+       than the one I started to add. Reused rather than duplicated. */
+
+    /* ---- contextual buttons ------------------------------------- */
+    /* Every couple of sections there is a way back to the form. They all
+       lead to the SAME form — one conversion goal, not competing ones.
+       If the dialog is in play, data-dialog-open in site.js already opens
+       it; these only need to handle the no-dialog case and the focus. */
+    Array.prototype.forEach.call(document.querySelectorAll("[data-hvx-jump]"), function (btn) {
+      btn.addEventListener("click", function () {
+        /* Give the dialog a moment if one is opening, then put the cursor
+           in the first empty field rather than at the top of a form. */
+        window.setTimeout(function () {
+          var open = document.querySelector("dialog[open] #hv-address");
+          var field = open || document.getElementById("hv-address");
+          if (!field) return;
+          if (!open) {
+            var target = document.getElementById("valuation");
+            if (target) target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+          }
+          if (!field.value) field.focus();
+        }, 60);
+      });
+    });
+
+    /* ---- 3. address autocomplete slot ------------------------------- */
+    /* Deliberately inert. No provider is configured and no key is
+       invented, so the field stays an ordinary text input that works.
+       When a provider is chosen, define window.TP_ADDRESS_AUTOCOMPLETE
+       before site.js and it will be handed the input. */
+    var addr = document.querySelector("[data-hvx-autocomplete]");
+    if (addr && typeof window.TP_ADDRESS_AUTOCOMPLETE === "function") {
+      try { window.TP_ADDRESS_AUTOCOMPLETE(addr); }
+      catch (e) { if (window.console) console.error("[hv] autocomplete provider failed", e); }
+    }
+
+    /* ---- 4. conversion tracking ------------------------------------- */
+    /* A shim, not an integration. It fires whatever is already on the
+       page and does nothing at all if nothing is. No Pixel ID, no
+       measurement ID, and no vendor script is added by this file — those
+       are Austin's to paste in when he has them.
+
+       Add gtag or fbq to the page and these events start reporting with
+       no further change here. */
+    function track(event, detail) {
+      try {
+        if (typeof window.fbq === "function") window.fbq("track", event, detail || {});
+        if (typeof window.gtag === "function") window.gtag("event", event, detail || {});
+        if (window.dataLayer && typeof window.dataLayer.push === "function") {
+          window.dataLayer.push(Object.assign({ event: event }, detail || {}));
+        }
+      } catch (e) { /* tracking must never break the form */ }
+      /* Always dispatch, so anything can listen without patching this. */
+      document.dispatchEvent(new CustomEvent("tp:track", { detail: { event: event, data: detail || {} } }));
+    }
+    window.TPtrack = track;
+
+    track("ViewContent", { content_name: "home_valuation_landing" });
+
+    /* Starting the form is the first real signal of intent. */
+    var starter = document.querySelector("[data-hv-start]");
+    if (starter) {
+      starter.addEventListener("submit", function () {
+        track("InitiateCheckout", { content_name: "home_valuation_started" });
+      });
+    }
+
+    /* Reaching the last step means they are about to hand over contact
+       details — worth knowing separately from those who finish. */
+    var wiz = document.querySelector("[data-wizard]");
+    if (wiz) {
+      var seen = {};
+      wiz.addEventListener("click", function (e) {
+        if (!e.target.closest("[data-wizard-next]")) return;
+        window.setTimeout(function () {
+          var cur = wiz.querySelector("[data-wizard-current]");
+          var n = cur ? cur.textContent.trim() : null;
+          if (n && !seen[n]) { seen[n] = true; track("ValuationStep", { step: n }); }
+        }, 30);
+      });
+    }
+
+    /* The conversion itself. site.js dispatches this once /api/lead has
+       confirmed the lead was STORED — not merely submitted — so what is
+       counted here is a lead that actually exists. */
+    document.addEventListener("tp:lead", function (e) {
+      var d = (e && e.detail) || {};
+      if (d.formType !== "home_valuation") return;
+      track("Lead", { content_name: "home_valuation", value: 0, currency: "USD" });
+    });
+  })();
 })();
