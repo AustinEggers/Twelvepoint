@@ -53,6 +53,14 @@ Nothing here is a nice-to-have. The nice-to-haves are not in this file.
       *Do not use a wildcard host such as `https://*.vercel.app/**` —
       that lets any site on that domain receive your auth tokens.*
 
+- [ ] **Re-point the IDX wrapper at the live domain.**
+      `idx-wrapper.html` currently hard-codes
+      `https://twelvepoint-two.vercel.app` in 28 places. IDX Broker serves
+      a COPY of that markup from their servers, so every URL in it must be
+      absolute — a relative path 404s. Find and replace, then update the
+      Dynamic Wrapper URL in IDX Broker → Design → Wrappers.
+      *Symptom if forgotten: listing pages render with no CSS at all.*
+
 - [ ] **Confirm the live domain and re-run the SEO build.**
       `SITE_URL` at the top of `tools/build-seo.sh` currently assumes
       `https://twelvepointrealty.com`. Every canonical, `og:url`, absolute
