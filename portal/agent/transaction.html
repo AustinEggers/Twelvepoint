@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css">
 <link rel="stylesheet" href="/assets/portal.css">
-<link rel="stylesheet" href="/assets/agent-dashboard.css?v=8">
+<link rel="stylesheet" href="/assets/agent-dashboard.css?v=10">
 </head>
 
 <!-- ==========================================================================
@@ -31,19 +31,25 @@
 
      Reaching this page means middleware.js verified an agent or admin token.
      Everything below is additionally enforced by RLS on every query.
+
+     ORDER OF THE PAGE IS THE POINT
+     An agent opens this to answer "what is going on and what do I do next",
+     so the page answers in that order: who and what, then what is wrong, then
+     what is due, and only then the fields to edit. Nothing that needs acting
+     on today sits below the fold.
      ========================================================================== -->
 
 <body class="portalbody agentui">
 <a class="skip" href="#main">Skip to content</a>
 
-<div class="app" data-portal-page data-staff-detail>
+<div class="app" data-portal-page data-ag-detail>
 
   <nav class="rail" aria-label="Portal">
     <a class="rail__brand" href="/index.html" aria-label="TwelvePoint Realty Group — home">
       <img src="/assets/mark-cream.png" width="648" height="112" alt="TwelvePoint Realty Group">
     </a>
     <div class="rail__nav">
-      <a data-icon="transactions" href="/portal/agent/" aria-current="page">Transactions</a>
+      <a data-icon="transactions" href="/portal/agent/">Transactions</a>
       <a data-icon="contracts" href="/portal/agent/contracts.html">Contracts</a>
       <a data-icon="marketing" href="/portal/agent/marketing.html">Marketing</a>
       <a data-icon="vendors" href="/portal/agent/vendors.html">Vendor List</a>
@@ -59,198 +65,236 @@
     </div>
   </nav>
 
-  <main class="appmain appmain--sticky" id="main">
+  <main class="appmain" id="main">
 
     <a class="dtl__back" href="/portal/agent/">&larr; All transactions</a>
-    <p class="note note--err" data-dtl-error hidden></p>
+    <p data-dtl-error hidden></p>
 
     <div data-dtl-body hidden>
 
-      <!-- ------------------------------------------------ header ------ -->
-      <header class="txhead">
-        <div class="txhead__main">
-          <h1 class="dtl__addr" data-dtl-addr>Loading…</h1>
-          <p class="txhead__meta">
+      <!-- ============================================ command bar ===== -->
+      <header class="cmdbar">
+        <div class="cmdbar__id">
+          <h1 class="cmdbar__addr" data-dtl-addr>Loading…</h1>
+          <p class="cmdbar__meta">
             <span data-dtl-client></span>
-            <span data-dtl-filenumber></span>
+            <span data-dtl-kind></span>
+            <span data-dtl-agent></span>
+            <span data-dtl-close></span>
+            <span data-dtl-file></span>
           </p>
         </div>
-        <div class="txhead__side">
-          <span class="pill" data-dtl-filestatus>—</span>
+        <div class="cmdbar__actions">
+          <span class="ag-pill" data-dtl-filestatus>—</span>
+          <button class="ag-btn ag-btn--primary" type="button" data-dtl-save disabled>Save changes</button>
+          <div class="menu" data-dtl-menu>
+            <button class="ag-btn" type="button" data-dtl-menubtn
+                    aria-haspopup="true" aria-expanded="false">•••</button>
+            <div class="menu__list" data-dtl-menulist hidden role="menu"></div>
+          </div>
         </div>
       </header>
 
-      <!-- ------------------------------------------------ timeline ---- -->
-      <section class="tcard">
-        <div class="tcard__head">
-          <h2 class="tcard__title">Transaction progress</h2>
-          <span class="tag tag--client">Visible to client</span>
+      <!-- Save state is deliberately its own line rather than a toast.
+           A toast that has faded cannot answer "did that save?". -->
+      <p class="savestate" data-dtl-savestate>All changes saved</p>
+
+      <!-- ============================================ stages ========== -->
+      <section class="ag-card sect-stages">
+        <div class="ag-card__head">
+          <h2 class="ag-card__title">Progress</h2>
+          <span class="ag-vis ag-vis--client">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+            Visible to client
+          </span>
         </div>
-        <!-- Clickable stages. Writing straight through on click rather than
-             waiting for a save: stage is the field an agent changes most
-             often, usually mid-call, and the client's page should reflect it
-             immediately. Everything slower lives behind the save bar. -->
-        <ol class="stages" data-stages>
-          <li><button type="button" class="tstage" data-stage="1"><span class="tstage__n">1</span><span class="tstage__label">Under contract</span></button></li>
-          <li><button type="button" class="tstage" data-stage="2"><span class="tstage__n">2</span><span class="tstage__label">Option &amp; inspection</span></button></li>
-          <li><button type="button" class="tstage" data-stage="3"><span class="tstage__n">3</span><span class="tstage__label">Ready for closing</span></button></li>
-          <li><button type="button" class="tstage" data-stage="4"><span class="tstage__n">4</span><span class="tstage__label">Closed</span></button></li>
-        </ol>
+        <ol class="stages" data-dtl-stages></ol>
       </section>
 
-      <!-- ------------------------------------------------ attention --- -->
-      <section class="tcard tcard--attention">
-        <div class="tcard__head">
-          <h2 class="tcard__title">Needs attention</h2>
+      <!-- ============================================ attention ======= -->
+      <!-- Derived by AG.rules on every repaint, never stored. Each item
+           scrolls to the section that can resolve it. -->
+      <section class="ag-card sect-attention" id="sec-attention">
+        <div class="ag-card__head">
+          <h2 class="ag-card__title">Needs attention <span class="ag-pill ag-pill--idle" data-dtl-attn-count>0</span></h2>
         </div>
-        <ul class="attn" data-attention></ul>
+        <ul class="attn" data-dtl-attention></ul>
       </section>
 
-      <div class="cols">
-        <!-- ---------------------------------------------- details ----- -->
-        <section class="tcard">
-          <div class="tcard__head">
-            <h2 class="tcard__title">Transaction details</h2>
-            <span class="tag tag--client">Visible to client</span>
+      <!-- ============================================ dates =========== -->
+      <section class="datestrip" data-dtl-datestrip aria-label="Critical dates"></section>
+
+      <div class="cols2">
+
+        <!-- ========================================== details ========= -->
+        <section class="ag-card" id="sec-details">
+          <div class="ag-card__head">
+            <h2 class="ag-card__title">Transaction details</h2>
+            <span class="ag-vis ag-vis--client">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+              Visible to client
+            </span>
           </div>
-          <div class="fgrid" data-details>
-            <label class="f"><span class="f__label">Property address</span>
-              <input class="f__in" type="text" data-fld="address"></label>
-            <label class="f"><span class="f__label">File number</span>
-              <input class="f__in" type="text" data-fld="file_number"></label>
-            <label class="f"><span class="f__label">Transaction type</span>
-              <select class="f__in" data-fld="kind">
-                <option value="purchase">Buyer</option>
-                <option value="sale">Seller</option>
-                <option value="lease">Lease</option>
-                <option value="other">Other</option>
-              </select></label>
-            <label class="f"><span class="f__label">File status</span>
-              <select class="f__in" data-fld="closing_status">
-                <option value="active">Active</option>
-                <option value="on_hold">On hold</option>
-                <option value="terminated">Terminated</option>
-                <option value="closed">Closed</option>
-              </select></label>
-            <label class="f"><span class="f__label">Sales price</span>
-              <input class="f__in" type="number" step="1000" min="0" data-fld="sales_price"></label>
-            <label class="f"><span class="f__label">Status note for client</span>
-              <input class="f__in" type="text" data-fld="status" placeholder="Under contract — option period"></label>
-            <p class="f f--static"><span class="f__label">Client</span>
-              <span class="f__val" data-dtl-clientname>—</span></p>
-            <p class="f f--static"><span class="f__label">Assigned agent</span>
-              <span class="f__val" data-dtl-agentname>—</span></p>
+          <div class="ag-card__body">
+            <div class="fgrid">
+              <label class="f f--wide"><span class="f__label">Property address</span>
+                <input class="f__in" type="text" data-fld="address"></label>
+              <label class="f"><span class="f__label">File number</span>
+                <input class="f__in" type="text" data-fld="file_number"></label>
+              <label class="f"><span class="f__label">Transaction type</span>
+                <select class="f__in" data-fld="kind">
+                  <option value="purchase">Buyer</option>
+                  <option value="sale">Seller</option>
+                  <option value="lease">Lease</option>
+                  <option value="other">Other</option>
+                </select></label>
+              <label class="f"><span class="f__label">File status</span>
+                <select class="f__in" data-fld="closing_status">
+                  <option value="active">Active</option>
+                  <option value="on_hold">On hold</option>
+                  <option value="terminated">Terminated</option>
+                  <option value="closed">Closed</option>
+                </select></label>
+              <label class="f"><span class="f__label">Sales price</span>
+                <input class="f__in" type="number" step="1000" min="0" data-fld="sales_price"></label>
+              <label class="f"><span class="f__label">Title company</span>
+                <input class="f__in" type="text" data-fld="title_company"></label>
+              <label class="f"><span class="f__label">Lender</span>
+                <input class="f__in" type="text" data-fld="lender"></label>
+              <label class="f"><span class="f__label">Financing</span>
+                <input class="f__in" type="text" data-fld="financing_type"
+                       placeholder="Conventional, FHA, VA, cash…"></label>
+              <label class="f f--wide"><span class="f__label">Status note shown to the client</span>
+                <input class="f__in" type="text" data-fld="status"
+                       placeholder="Under contract — option period"></label>
+              <p class="f f--static"><span class="f__label">Client</span>
+                <span class="f__val" data-dtl-clientname>—</span></p>
+              <p class="f f--static"><span class="f__label">Assigned agent</span>
+                <span class="f__val" data-dtl-agentname>—</span></p>
+            </div>
           </div>
         </section>
 
-        <!-- ---------------------------------------------- dates ------- -->
-        <section class="tcard">
-          <div class="tcard__head">
-            <h2 class="tcard__title">Dates &amp; deadlines</h2>
+        <!-- ========================================== dates edit ====== -->
+        <section class="ag-card" id="sec-dates">
+          <div class="ag-card__head">
+            <h2 class="ag-card__title">Dates &amp; deadlines</h2>
+            <span class="ag-vis ag-vis--client">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+              Visible to client
+            </span>
           </div>
-          <div class="dates" data-dates>
-            <label class="dt"><span class="f__label">Contract date</span>
-              <input class="f__in" type="date" data-fld="contract_date"><span class="dt__flag"></span></label>
-            <label class="dt"><span class="f__label">Earnest money due</span>
-              <input class="f__in" type="date" data-fld="earnest_due"><span class="dt__flag"></span></label>
-            <label class="dt"><span class="f__label">Option period ends</span>
-              <input class="f__in" type="date" data-fld="option_ends"><span class="dt__flag"></span></label>
-            <label class="dt"><span class="f__label">Financing approval</span>
-              <input class="f__in" type="date" data-fld="financing_deadline"><span class="dt__flag"></span></label>
-            <label class="dt"><span class="f__label">Appraisal deadline</span>
-              <input class="f__in" type="date" data-fld="appraisal_deadline"><span class="dt__flag"></span></label>
-            <label class="dt"><span class="f__label">Final walkthrough</span>
-              <input class="f__in" type="date" data-fld="walkthrough_date"><span class="dt__flag"></span></label>
-            <label class="dt"><span class="f__label">Closing date</span>
-              <input class="f__in" type="date" data-fld="expected_close"><span class="dt__flag"></span></label>
+          <div class="ag-card__body">
+            <div class="fgrid" data-dtl-dates></div>
           </div>
         </section>
       </div>
 
-      <!-- ------------------------------------------------ milestones -- -->
-      <section class="tcard">
-        <div class="tcard__head">
-          <h2 class="tcard__title">Milestones</h2>
-          <span class="tag tag--client">Visible to client</span>
-        </div>
-        <div class="miles" data-milestones></div>
-      </section>
-
-      <!-- ------------------------------------------------ actions ----- -->
-      <section class="tcard">
-        <div class="tcard__head">
-          <h2 class="tcard__title">Client action items</h2>
-          <span class="tag tag--client">
-            <svg viewBox="0 0 16 16" class="tag__i" aria-hidden="true"><path d="M8 3C4.5 3 1.7 5.4 1 8c.7 2.6 3.5 5 7 5s6.3-2.4 7-5c-.7-2.6-3.5-5-7-5Zm0 8.2A3.2 3.2 0 1 1 8 4.8a3.2 3.2 0 0 1 0 6.4Zm0-1.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2Z" fill="currentColor"/></svg>
+      <!-- ============================================ milestones ====== -->
+      <section class="ag-card" id="sec-milestones">
+        <div class="ag-card__head">
+          <h2 class="ag-card__title">Milestones</h2>
+          <span class="ag-vis ag-vis--client">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
             Visible to client
           </span>
         </div>
-        <div data-actionitems></div>
-        <form class="aiform" data-ai-form>
-          <input class="f__in" type="text" name="title" placeholder="What the client needs to do" required>
-          <input class="f__in" type="date" name="due_date" aria-label="Due date">
-          <button class="btn btn--sm" type="submit">Add</button>
-        </form>
+        <ul class="miles" data-dtl-miles></ul>
       </section>
 
-      <!-- ------------------------------------------------ documents --- -->
-      <section class="tcard">
-        <div class="tcard__head">
-          <h2 class="tcard__title">Transaction documents</h2>
-        </div>
-        <p class="note">
-          Documents are <strong>internal by default</strong>. Tick <em>Shared</em>
-          to let the client see one. The database enforces it — an unshared file
-          cannot be read or downloaded by a client account even directly.
-        </p>
-        <div data-documents></div>
-      </section>
-
-      <!-- ------------------------------------------------ internal ---- -->
-      <!-- Kept on this page only. The client page neither renders nor queries
-           this table, and RLS refuses it to client accounts regardless. -->
-      <section class="tcard tcard--internal">
-        <div class="tcard__head">
-          <h2 class="tcard__title">Internal notes</h2>
-          <span class="tag tag--internal">
-            <svg viewBox="0 0 16 16" class="tag__i" aria-hidden="true"><path d="M11.5 6.5V5a3.5 3.5 0 1 0-7 0v1.5H3.5v7h9v-7h-1Zm-5.5 0V5a2 2 0 1 1 4 0v1.5H6Z" fill="currentColor"/></svg>
-            Internal only — not visible to client
+      <!-- ============================================ action items ==== -->
+      <section class="ag-card" id="sec-actions">
+        <div class="ag-card__head">
+          <h2 class="ag-card__title">Client action items</h2>
+          <span class="ag-vis ag-vis--client">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+            Visible to client
           </span>
         </div>
-        <textarea class="f__in intnotes" data-internal-notes rows="6"
-                  placeholder="Waiting on lender for updated approval. Called title 8/27."></textarea>
+        <div class="ag-card__body">
+          <div data-dtl-actions></div>
+          <form class="addrow" data-dtl-actionform>
+            <input class="f__in" type="text" name="title" placeholder="Add a task for the client…" required>
+            <input class="f__in addrow__date" type="date" name="due_date" aria-label="Due date">
+            <select class="f__in addrow__pri" name="priority" aria-label="Priority">
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+            <button class="ag-btn" type="submit">Add</button>
+          </form>
+        </div>
       </section>
 
-      <!-- ------------------------------------------------ history ----- -->
-      <section class="tcard">
-        <div class="tcard__head">
-          <h2 class="tcard__title">History</h2>
-          <span class="tag tag--internal">Internal only</span>
+      <!-- ============================================ documents ======= -->
+      <section class="ag-card" id="sec-docs">
+        <div class="ag-card__head">
+          <h2 class="ag-card__title">Documents</h2>
+          <span class="ag-vis ag-vis--internal">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7h8v6H4zM6 7V5a2 2 0 0 1 4 0v2"/></svg>
+            Internal unless shared
+          </span>
         </div>
-        <div data-audit></div>
+        <div class="ag-card__body">
+          <!-- Drag and drop, with a real file input behind it so keyboard
+               users are not locked out of uploading. -->
+          <label class="drop" data-dtl-drop>
+            <input type="file" multiple data-dtl-file hidden>
+            <span class="drop__text">Drop files here, or <span class="drop__link">choose files</span></span>
+            <span class="drop__hint">New documents are internal until you share them.</span>
+          </label>
+          <p class="uploadstate" data-dtl-upstate hidden></p>
+          <div data-dtl-docs></div>
+        </div>
+      </section>
+
+      <!-- ============================================ internal notes == -->
+      <section class="ag-card sect-internal" id="sec-notes">
+        <div class="ag-card__head">
+          <h2 class="ag-card__title">Internal notes</h2>
+          <span class="ag-vis ag-vis--internal">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7h8v6H4zM6 7V5a2 2 0 0 1 4 0v2"/></svg>
+            Internal only
+          </span>
+        </div>
+        <div class="ag-card__body">
+          <form class="addnote" data-dtl-noteform>
+            <textarea class="f__in" name="body" rows="2"
+                      placeholder="Waiting on lender for updated approval…" required></textarea>
+            <button class="ag-btn" type="submit">Add note</button>
+          </form>
+          <div data-dtl-notes></div>
+        </div>
+      </section>
+
+      <!-- ============================================ activity ======== -->
+      <section class="ag-card sect-internal" id="sec-activity">
+        <div class="ag-card__head">
+          <h2 class="ag-card__title">Activity</h2>
+          <span class="ag-vis ag-vis--internal">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7h8v6H4zM6 7V5a2 2 0 0 1 4 0v2"/></svg>
+            Internal only
+          </span>
+        </div>
+        <div class="ag-card__body">
+          <div data-dtl-activity></div>
+        </div>
       </section>
 
     </div>
   </main>
 
-  <!-- Sticky save. Sits in the layout rather than over it, so it never
-       covers the last field on the page. -->
-  <div class="savebar" data-savebar hidden>
-    <span class="savebar__state" data-save-state>Unsaved changes</span>
-    <button class="btn" type="button" data-save>Save changes</button>
-  </div>
-
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="/assets/supabase-config.js"></script>
 <!-- agent.js BEFORE portal.js, and the order is load-bearing.
      portal.js dispatches inside sb.auth.getSession().then(). That resolves
      from localStorage with no network call, so the callback runs as a
      microtask at the end of portal.js own execution — before a later
      <script> has been executed. window.AG would not exist yet and the
-     dashboard would never start, silently. -->
-<script src="/assets/agent.js?v=8"></script>
-<script src="/assets/portal.js?v=8"></script>
+     page would never start, silently. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/assets/supabase-config.js"></script>
+<script src="/assets/agent.js?v=10"></script>
+<script src="/assets/portal.js?v=10"></script>
 </body>
 </html>

@@ -365,24 +365,24 @@
   /* ================================================================== */
   /* signed-in pages                                                     */
   /* ================================================================== */
-  /* Hand off to the agent dashboard in agent.js, whenever it turns up.
-     Tries now, then on DOMContentLoaded, then on load, then gives up out
-     loud. Anything that fails to start must say so on the page — a
-     backend that quietly shows nothing is worse than one that shows an
-     error, because nobody can tell it apart from slow. */
-  function startAgentDash(client, session, role) {
+  /* Hand off to a module in agent.js, whenever it turns up. Tries now,
+     then on DOMContentLoaded, then on load, then gives up out loud.
+     Anything that fails to start must say so on the page — a backend that
+     quietly shows nothing is worse than one that shows an error, because
+     nobody can tell it apart from slow. */
+  function startAgentModule(name, client, session, role) {
     var tries = 0;
     function go() {
-      if (window.AG && window.AG.dash) { window.AG.dash.init(client, session, role); return true; }
+      if (window.AG && window.AG[name]) { window.AG[name].init(client, session, role); return true; }
       return false;
     }
     if (go()) return;
     function retry() {
       if (go() || ++tries > 2) {
-        if (tries > 2 && !(window.AG && window.AG.dash)) {
-          var note = $("[data-ag-count]");
-          if (note) note.textContent = "The dashboard script did not load. Refresh the page.";
-          if (window.console) console.error("[portal] agent.js never defined AG.dash");
+        if (tries > 2 && !(window.AG && window.AG[name])) {
+          var note = $("[data-ag-count]") || $("[data-dtl-savestate]");
+          if (note) note.textContent = "The page script did not load. Refresh the page.";
+          if (window.console) console.error("[portal] agent.js never defined AG." + name);
         }
         return;
       }
@@ -443,7 +443,10 @@
          Guarded on window.AG so that if agent.js fails to load, this page
          degrades to nothing rather than throwing and taking the sidebar
          and the logout button down with it. */
-      if ($("[data-ag-dash]")) {
+      if ($("[data-ag-detail]")) {
+        startAgentModule("detail", sb, session, role);
+      }
+      else if ($("[data-ag-dash]")) {
         /* Do NOT make this conditional on window.AG existing right now.
            This callback can run before a later <script> has executed —
            getSession() resolves from localStorage with no network call,
@@ -451,7 +454,7 @@
            agent.js is loaded first to avoid that, but a page that gets the
            order wrong should degrade to "starts late", never to "silently
            does nothing", which is what the old window.AG guard did. */
-        startAgentDash(sb, session, role);
+        startAgentModule("dash", sb, session, role);
         initNewTransaction(session, role);
       }
       else if ($("[data-staff-detail]")) initStaffDetail(session);
