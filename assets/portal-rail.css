@@ -1,0 +1,265 @@
+/* =====================================================================
+   portal-rail.css — the sidebar, defined ONCE for both portals.
+
+   Loaded by every page under /portal/, agent and client alike, after
+   portal.css and before any page-specific stylesheet.
+
+   WHY THIS FILE EXISTS
+   The rail was styled twice: portal.css drew the original, and
+   agent-dashboard.css redrew it for the backend. The two drifted, and a
+   client signing in got a visibly different sidebar from the one an agent
+   uses — different type size, no icons, a different active state. There
+   is no reason for those to differ. It is the same product and the same
+   navigation; only the content behind it changes.
+
+   So the rail lives here, once, unscoped. portal.css keeps everything
+   else it does; its own .rail rules are now overridden by this file,
+   which loads after it.
+
+   BEHAVIOUR LIVES IN assets/rail.js — icon injection, the collapse
+   toggle, the mobile drawer, and marking the current page. The classes
+   this file reacts to (is-railtight, is-railopen) are set there. If that
+   script fails to load, the rail is still a perfectly usable static
+   sidebar; nothing here depends on it having run.
+   ===================================================================== */
+
+:root {
+  --rail-bg:    #14171b;   /* the sidebar ground                */
+  --rail-idle:  #9aa4b0;   /* an unselected label               */
+  --rail-gold:  #b08d3f;   /* the one brand colour in here      */
+  --rail-w:     14.5rem;
+  --rail-w-sm:  3.75rem;
+  --rail-ui: "Libre Franklin", -apple-system, BlinkMacSystemFont, "Segoe UI",
+             Roboto, "Helvetica Neue", Arial, sans-serif;
+  --rail-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ------------------------------------------------------------------ */
+/* shell                                                               */
+/* ------------------------------------------------------------------ */
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--rail-w) 1fr;
+}
+body.is-railtight .app { grid-template-columns: var(--rail-w-sm) 1fr; }
+
+/* ------------------------------------------------------------------ */
+/* the rail                                                            */
+/* ------------------------------------------------------------------ */
+.rail {
+  background: var(--rail-bg);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  font-family: var(--rail-ui);
+}
+
+.rail__brand {
+  display: flex;
+  align-items: center;
+  min-height: 3.5rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+}
+.rail__brand img { width: 100%; max-width: 8.5rem; height: auto; display: block; }
+body.is-railtight .rail__brand img { display: none; }
+
+.rail__nav {
+  display: flex;
+  flex-direction: column;
+  padding: .5rem .5rem 0;
+  gap: 1px;
+  overflow-y: auto;
+}
+.rail__nav a {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  padding: .5rem .625rem;
+  border-radius: 5px;
+  border-left: 0;                    /* portal.css drew a 3px bar here */
+  color: var(--rail-idle);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 450;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+.rail__nav a:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+.rail__nav a[aria-current="page"] {
+  background: rgba(255, 255, 255, .09);
+  color: #fff;
+  font-weight: 550;
+  border-left: 0;
+  box-shadow: inset 2px 0 0 var(--rail-gold);
+}
+.rail__nav svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+body.is-railtight .rail__label { display: none; }
+body.is-railtight .rail__nav a { justify-content: center; padding-inline: 0; }
+
+/* Collapse sits with the navigation rather than the footer, so it reads
+   as a view control and not an account action. */
+.rail__toggle {
+  margin: .5rem .5rem 0;
+  padding: .45rem .625rem;
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  background: none;
+  border: 0;
+  border-radius: 5px;
+  color: var(--rail-idle);
+  font: inherit;
+  font-family: var(--rail-ui);
+  font-size: .8125rem;
+  cursor: pointer;
+  width: calc(100% - 1rem);
+}
+.rail__toggle:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+.rail__toggle svg { width: 17px; height: 17px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; }
+body.is-railtight .rail__toggle { justify-content: center; padding-inline: 0; }
+body.is-railtight .rail__toggle svg { transform: scaleX(-1); }
+
+.rail__foot {
+  margin-top: auto;
+  padding: .75rem;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+.rail__who { display: block; margin-bottom: .5rem; line-height: 1.3; min-width: 0; }
+.rail__role {
+  display: inline-block;
+  font-family: var(--rail-mono);
+  font-size: 10px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--rail-gold);
+  margin-bottom: .1rem;
+}
+.rail__name {
+  display: block;
+  font-size: .8125rem;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rail__out {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 5px;
+  color: var(--rail-idle);
+  font: inherit;
+  font-family: var(--rail-ui);
+  font-size: .8125rem;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: .35rem .6rem;
+  cursor: pointer;
+  width: 100%;
+}
+.rail__out:hover { color: #fff; border-color: rgba(255, 255, 255, .34); }
+body.is-railtight .rail__who { display: none; }
+body.is-railtight .rail__out { font-size: 0; padding: .45rem 0; }
+body.is-railtight .rail__out::after { content: "\2192"; font-size: 13px; }
+
+/* ------------------------------------------------------------------ */
+/* mobile: the rail becomes a drawer                                   */
+/* ------------------------------------------------------------------ */
+/* The drawer only makes sense once rail.js has built the bar that opens
+   it. Everything here is therefore gated on body.has-railbar, which that
+   script sets. Without it the rail stays in the normal flow and the page
+   is still perfectly usable — a hidden drawer with no handle would be
+   the worst outcome, so it cannot happen by accident. */
+.railbar { display: none; }
+
+@media (max-width: 60rem) {
+  .app,
+  body.is-railtight .app {
+    grid-template-columns: 1fr;
+    /* Two rows, explicitly. Without this the grid splits 100dvh evenly
+       between the bar and the content and the bar becomes half the
+       screen. */
+    grid-template-rows: auto 1fr;
+  }
+
+  body.has-railbar .railbar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--rail-bg);
+    color: #fff;
+    padding: .5rem .75rem;
+    min-height: 3rem;
+  }
+  .railbar img { height: 22px; width: auto; }
+  .railbar__menu {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 5px;
+    color: #fff;
+    padding: .35rem .5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .railbar__menu svg {
+    width: 18px; height: 18px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.8; stroke-linecap: round;
+  }
+
+  body.has-railbar .rail {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(17rem, 82vw);
+    z-index: 60;
+    transform: translateX(-100%);
+    transition: transform .18s ease;
+    box-shadow: 0 0 40px rgba(0, 0, 0, .4);
+  }
+  body.has-railbar.is-railopen .rail { transform: none; }
+
+  /* Collapsed is a desktop idea. On a phone the drawer is either open or
+     it is not, and a 60px strip of icons helps nobody. */
+  body.is-railtight .rail__brand img,
+  body.is-railtight .rail__label { display: block; }
+  body.is-railtight .rail__nav a { justify-content: flex-start; padding-inline: .625rem; }
+  body.is-railtight .rail__who { display: block; }
+  body.is-railtight .rail__out { font-size: .8125rem; padding: .35rem .6rem; }
+  body.is-railtight .rail__out::after { content: none; }
+  .rail__toggle { display: none; }
+
+  .railscrim {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(10, 12, 15, .45);
+    border: 0;
+    padding: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail { transition: none; }
+}

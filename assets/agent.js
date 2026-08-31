@@ -23,7 +23,9 @@
        AG.fmt      formatting
        AG.icon     inline SVG sprites
        AG.err      the agent error surface — concise, Retry, details
-       AG.shell    sidebar: collapse, mobile drawer, active link
+
+   The sidebar lives in assets/rail.js, loaded before this file and shared
+   with the client portal, so both halves of the product navigate the same.
 
    Later steps add AG.dash, AG.wizard, AG.detail, AG.attention and so on
    as siblings. Each module is independent and named after what it draws,
@@ -317,150 +319,6 @@ window.AG = (function () {
       dom.clear(host);
       host.hidden = false;
       host.appendChild(dom.el("p", "ag-empty", text || "Nothing here yet."));
-    }
-  };
-
-  /* ================================================================== */
-  /* AG.shell                                                           */
-  /* ================================================================== */
-  /* Sidebar behaviour. Three jobs and nothing else:
-
-       1. Mark the current page, so the nav is honest after a rename.
-       2. Collapse to icons on desktop, remembered per browser.
-       3. Behave as a drawer under 60rem.
-
-     The collapsed state is a per-viewer convenience, so localStorage is
-     the right home for it. Wrapped in try/catch because a browser set to
-     block site data throws on access rather than returning null. */
-  var RAIL_KEY = "tp-agent-rail";
-
-  AG.shell = {
-    init: function () {
-      var body = document.body;
-      if (!body || !body.classList.contains("agentui")) return;
-
-      AG.shell.markCurrent();
-      AG.shell.decorateNav();
-      AG.shell.buildBar();
-      AG.shell.restore();
-    },
-
-    /* aria-current is hand-written in the markup today, which rots the
-       moment a file is renamed. Recomputing from the URL keeps it true. */
-    markCurrent: function () {
-      var here = location.pathname.replace(/index\.html$/, "");
-      var links = dom.qa(".rail__nav a");
-      var hit = null;
-
-      links.forEach(function (a) {
-        a.removeAttribute("aria-current");
-        var path = (a.getAttribute("href") || "").replace(/index\.html$/, "");
-        /* Skip the section root here — it matches everything under it and
-           would win over the more specific page. It is the fallback below. */
-        if (path === "/portal/agent/") return;
-        if (path === here) hit = a;
-      });
-
-      /* Pages that hang off a section rather than being one: the detail
-         view lives at transaction.html and belongs under Transactions. */
-      if (!hit) {
-        hit = links.filter(function (a) {
-          return (a.getAttribute("href") || "").replace(/index\.html$/, "") === "/portal/agent/";
-        })[0] || null;
-      }
-
-      if (hit) hit.setAttribute("aria-current", "page");
-    },
-
-    /* Wrap each label in a span and prepend its icon. Done in script so
-       the markup stays readable and the icon set lives in one place. */
-    decorateNav: function () {
-      dom.qa(".rail__nav a").forEach(function (a) {
-        if (a.querySelector("svg")) return;
-        var name = a.getAttribute("data-icon");
-        var label = dom.el("span", "rail__label", a.textContent.trim());
-        dom.clear(a);
-        if (name) a.appendChild(AG.icon(name));
-        a.appendChild(label);
-      });
-    },
-
-    /* The desktop collapse button, and the mobile top bar. Both are built
-       here rather than repeated in seven HTML files. */
-    buildBar: function () {
-      var rail = dom.q(".rail");
-      var app  = dom.q(".app");
-      if (!rail || !app) return;
-
-      var nav = dom.q(".rail__nav");
-      if (nav && !dom.q(".rail__toggle")) {
-        var t = dom.el("button", "rail__toggle");
-        t.type = "button";
-        t.appendChild(AG.icon("collapse"));
-        t.appendChild(dom.el("span", "rail__label", "Collapse"));
-        t.setAttribute("aria-label", "Collapse sidebar");
-        dom.on(t, "click", function () {
-          var tight = document.body.classList.toggle("is-railtight");
-          t.setAttribute("aria-label", tight ? "Expand sidebar" : "Collapse sidebar");
-          try { localStorage.setItem(RAIL_KEY, tight ? "1" : "0"); } catch (e) {}
-        });
-        nav.parentNode.insertBefore(t, nav.nextSibling);
-      }
-
-      if (dom.q(".railbar")) return;
-
-      var bar = dom.el("div", "railbar");
-      var menu = dom.el("button", "railbar__menu");
-      menu.type = "button";
-      menu.setAttribute("aria-label", "Open menu");
-      menu.setAttribute("aria-expanded", "false");
-      menu.appendChild(AG.icon("menu"));
-      bar.appendChild(menu);
-
-      var mark = document.createElement("img");
-      mark.src = "/assets/mark-cream.png";
-      mark.alt = "TwelvePoint Realty Group";
-      bar.appendChild(mark);
-
-      app.insertBefore(bar, app.firstChild);
-
-      function close() {
-        document.body.classList.remove("is-railopen");
-        menu.setAttribute("aria-expanded", "false");
-        var s = dom.q(".railscrim");
-        if (s) s.parentNode.removeChild(s);
-      }
-
-      dom.on(menu, "click", function () {
-        var open = document.body.classList.toggle("is-railopen");
-        menu.setAttribute("aria-expanded", open ? "true" : "false");
-        if (open) {
-          var scrim = dom.el("button", "railscrim");
-          scrim.type = "button";
-          scrim.setAttribute("aria-label", "Close menu");
-          dom.on(scrim, "click", close);
-          document.body.appendChild(scrim);
-        } else {
-          close();
-        }
-      });
-
-      dom.on(document, "keydown", function (e) {
-        if (e.key === "Escape") close();
-      });
-
-      /* Following a link inside the drawer should shut it. */
-      dom.qa(".rail__nav a").forEach(function (a) { dom.on(a, "click", close); });
-    },
-
-    restore: function () {
-      var v = null;
-      try { v = localStorage.getItem(RAIL_KEY); } catch (e) {}
-      if (v === "1") {
-        document.body.classList.add("is-railtight");
-        var t = dom.q(".rail__toggle");
-        if (t) t.setAttribute("aria-label", "Expand sidebar");
-      }
     }
   };
 
@@ -2136,12 +1994,7 @@ window.AG = (function () {
     };
   })();
 
-  /* ------------------------------------------------------------------ */
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", AG.shell.init);
-  } else {
-    AG.shell.init();
-  }
-
+  /* The sidebar is not this file's job any more — assets/rail.js owns it
+     and is shared with the client portal. */
   return AG;
 })();
