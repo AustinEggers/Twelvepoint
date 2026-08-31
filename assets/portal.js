@@ -420,17 +420,98 @@
       s.hidden = false;
     }
 
+    /* ---------------------------------------------------------------- */
+    /* password recovery                                                 */
+    /* ---------------------------------------------------------------- */
+    /* A recovery link signs the visitor in as a side effect. That means
+       routeSignedIn would fire and take them into the portal before they
+       could set anything — which is what happened: the link worked as a
+       password-free way in, reusable by anyone who saw the email, and the
+       password never changed.
+
+       So recovery is detected BEFORE any routing decision, from the URL
+       itself, and while it holds nothing redirects. */
+    var RECOVERY = (function () {
+      var h = location.hash || "";
+      var s = location.search || "";
+      return h.indexOf("type=recovery") !== -1 || s.indexOf("type=recovery") !== -1;
+    })();
+
+    function showRecovery(msg, kind) {
+      var panel = $("[data-portal-recovery]");
+      if (!panel) return;
+      $$(".portal__panel").forEach(function (n) {
+        if (n !== panel) n.hidden = true;
+      });
+      panel.hidden = false;
+      var s = $("[data-portal-status]", panel);
+      if (s && msg) {
+        s.textContent = msg;
+        s.className = "portal__status" + (kind ? " portal__status--" + kind : "");
+        s.hidden = false;
+      }
+      var f = $("input[name=password]", panel);
+      if (f) f.focus();
+    }
+
+    (function wireNewPassword() {
+      var form = $("[data-portal-newpass]");
+      if (!form) return;
+      var status = $("[data-portal-status]", form);
+      var submit = $("button[type=submit]", form);
+
+      function say(msg, kind) {
+        if (!status) return;
+        status.textContent = msg || "";
+        status.className = "portal__status" + (kind ? " portal__status--" + kind : "");
+        status.hidden = !msg;
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var a = form.elements.password.value;
+        var b = form.elements.password2.value;
+        if (a.length < 8) { say("Use at least 8 characters.", "err"); return; }
+        if (a !== b)      { say("Those two do not match.", "err"); return; }
+
+        submit.disabled = true;
+        say("Saving…");
+        sb.auth.updateUser({ password: a }).then(function (res) {
+          if (res.error) {
+            submit.disabled = false;
+            /* The recovery token is single-use and short-lived. Say so,
+               rather than leaving them retyping a password that will
+               never be accepted. */
+            say(/expired|invalid|token/i.test(res.error.message || "")
+              ? "That reset link has expired. Request a new one and use it straight away."
+              : (res.error.message || "That password could not be saved."), "err");
+            return;
+          }
+          say("Password saved. Taking you in…", "ok");
+          sb.auth.getSession().then(function (r) {
+            var s2 = r.data && r.data.session;
+            var dest = s2 ? destFor(s2, null) : null;
+            location.replace(dest || LOGIN);
+          });
+        });
+      });
+    })();
+
     if (sb) {
       sb.auth.onAuthStateChange(function (event, session) {
-        if (event === "PASSWORD_RECOVERY") {
-          var s = $("[data-portal-status]");
-          if (s) { s.textContent = "Enter a new password below, then press Sign in."; s.className = "portal__status portal__status--warn"; s.hidden = false; }
+        if (event === "PASSWORD_RECOVERY" || (RECOVERY && session)) {
+          showRecovery("", null);
           return;
         }
+        if (RECOVERY) return;          /* never route while recovering */
         if ((event === "INITIAL_SESSION" || event === "SIGNED_IN") && session) {
           routeSignedIn(session);
         }
       });
+
+      /* If the hash says recovery, show the panel immediately rather than
+         waiting for an event that may already have fired. */
+      if (RECOVERY) showRecovery("", null);
     }
   }
 

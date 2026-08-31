@@ -192,6 +192,47 @@
         </div>
       </div>
 
+
+      <!-- ============================================================
+           PASSWORD RECOVERY
+
+           Shown INSTEAD of the tabs when someone arrives from a reset
+           link, and hidden the rest of the time.
+
+           Why its own panel rather than reusing the sign-in form: the
+           whole point is that this person does not know their password.
+           A form that asks for the old one is the wrong question, and
+           reusing it would submit signInWithPassword when what is needed
+           is updateUser.
+
+           The recovery link signs them in as a side effect. Without this
+           panel the page redirected them into the portal before they
+           could set anything, so the link behaved as a permanent
+           password-free way in and the password never actually changed.
+           ============================================================ -->
+      <div class="portal__panel reveal" data-portal-recovery hidden>
+        <div class="portal__body">
+          <p class="portal__note">
+            You followed a reset link, so you are signed in for the moment.
+            Choose a new password to finish.</p>
+          <form class="form portal__form" data-portal-newpass novalidate>
+            <div class="field form__full">
+              <label for="r-pass">New password</label>
+              <input id="r-pass" name="password" type="password"
+                     autocomplete="new-password" minlength="8" required>
+            </div>
+            <div class="field form__full">
+              <label for="r-pass2">Repeat it</label>
+              <input id="r-pass2" name="password2" type="password"
+                     autocomplete="new-password" minlength="8" required>
+            </div>
+            <p class="portal__status form__full" data-portal-status role="status" aria-live="polite" hidden></p>
+            <div class="form__full">
+              <button class="btn" type="submit">Save password and continue</button>
+            </div>
+          </form>
+        </div>
+      </div>
       <p class="portal__legal reveal reveal--d2">
         Access is limited to TwelvePoint Realty Group clients and licensed team members.
         Transaction documents are confidential.
