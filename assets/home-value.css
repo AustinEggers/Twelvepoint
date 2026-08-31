@@ -124,8 +124,12 @@
    The gold hairline is what keeps it feeling like TwelvePoint rather
    than a generic dark modal. */
 .hvx-card {
-  background: rgba(20, 19, 16, .93);
-  backdrop-filter: blur(10px);
+  /* Transparent enough that the house reads through it, opaque enough
+     that white text on it never has to compete with whatever happens to
+     be behind. The blur does most of the work: it lets the alpha come
+     down without the photograph turning the text to mush. */
+  background: rgba(20, 19, 16, .84);
+  backdrop-filter: blur(14px) saturate(115%);
   border: 1px solid color-mix(in srgb, var(--gold) 34%, transparent);
   border-radius: 4px;
   padding: clamp(1.5rem, 2.4vw, 2rem);
