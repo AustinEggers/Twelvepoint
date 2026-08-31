@@ -136,3 +136,12 @@
   font-size: .9rem;
   color: var(--stone-dim, #6b6b66);
 }
+
+/* The featured block sits directly under the hero, so its height is the
+   difference between a tight first impression and a band of white space
+   in the first thing anyone sees. Shorter than the full search on
+   purpose — this lists a handful of properties, not a result set. */
+.idxframe--featured { height: 900px; }
+@media (max-width: 48rem) {
+  .idxframe--featured { height: 1000px; }
+}
