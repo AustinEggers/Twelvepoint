@@ -131,25 +131,76 @@
              never asked for twice. Keeping the hook keeps that working. -->
         <div class="hvx-card" data-hvx-card>
           <h2 class="hvx-card__h">Get your free home value report</h2>
-          <p class="hvx-card__sub">Start with your property address.</p>
+          <p class="hvx-card__sub">Start with your property details.</p>
 
+          <!-- These fields are DUPLICATES of the wizard's, on purpose, with
+               their own -hero ids so nothing clashes. site.js copies each
+               one into the wizard when this is submitted, then opens the
+               wizard on the first question still unanswered — so nothing is
+               ever typed twice and no answer is thrown away. -->
           <form class="hv-start" action="#valuation" method="get" data-hv-start>
-            <label for="hv-address-hero">Property address</label>
-            <!-- data-hvx-autocomplete marks this for an address provider.
-                 Nothing is wired to it yet and no key is invented; the field
-                 is an ordinary text input until one is added. -->
-            <input id="hv-address-hero" name="address" type="text"
-                   autocomplete="street-address" enterkeyhint="go"
-                   data-hvx-autocomplete
-                   placeholder="Enter your property address">
+            <div class="hvx-f">
+              <label for="hv-address-hero">Property address</label>
+              <input id="hv-address-hero" name="address" type="text"
+                     autocomplete="street-address" enterkeyhint="next"
+                     data-hvx-autocomplete
+                     placeholder="Enter your property address">
+            </div>
+
+            <div class="hvx-f">
+              <label for="hv-type-hero">Property type</label>
+              <select id="hv-type-hero" name="type">
+                <option value="">Select property type</option>
+                <option>Single-family home</option>
+                <option>Home on acreage</option>
+                <option>Townhome or condo</option>
+                <option>Ranch or land</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="hvx-pair">
+              <div class="hvx-f">
+                <label for="hv-beds-hero">Bedrooms</label>
+                <select id="hv-beds-hero" name="beds">
+                  <option value="">Any</option>
+                  <option>1</option><option>2</option><option>3</option>
+                  <option>4</option><option>5</option><option>6+</option>
+                  <option>Not sure</option>
+                </select>
+              </div>
+              <div class="hvx-f">
+                <label for="hv-baths-hero">Bathrooms</label>
+                <select id="hv-baths-hero" name="baths">
+                  <option value="">Any</option>
+                  <option>1</option><option>1.5</option><option>2</option>
+                  <option>2.5</option><option>3</option><option>4+</option>
+                  <option>Not sure</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="hvx-f">
+              <label for="hv-sqft-hero">Approx. square feet</label>
+              <select id="hv-sqft-hero" name="sqft">
+                <option value="">Any</option>
+                <option>Under 1,500</option>
+                <option>1,500 - 2,000</option>
+                <option>2,000 - 2,500</option>
+                <option>2,500 - 3,000</option>
+                <option>3,000 - 4,000</option>
+                <option>Over 4,000</option>
+                <option>Not sure</option>
+              </select>
+            </div>
+
             <button class="btn" type="submit">Get My Home Value <span class="btn__arrow" aria-hidden="true">&rarr;</span></button>
           </form>
 
           <p class="hvx-card__note">
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 9h12v8H4zM7 9V6a3 3 0 0 1 6 0v3"/></svg>
             Takes about a minute &middot; No account needed
-          </p>
-        </div>
+          </p>      </div>
 
       </div>
     </div>

@@ -199,19 +199,54 @@
         }
       }
 
-      /* Carry the hero address into step one so it is never typed twice. */
+      /* Carry EVERY hero answer into the wizard so nothing is asked twice
+         and nothing a visitor typed is thrown away.
+
+         The hero card duplicates five of the wizard's fields with -hero
+         ids. This list is the join between the two. Adding a field to the
+         card means adding one line here, and forgetting to would silently
+         discard whatever they entered — which is exactly why the pairs sit
+         in one list rather than being copied across one by one in-line. */
+      var HERO_CARRY = [
+        ["address", "#hv-address"],
+        ["type",    "#hv-type"],
+        ["beds",    "#hv-beds"],
+        ["baths",   "#hv-baths"],
+        ["sqft",    "#hv-sqft"]
+      ];
+
       var starter = document.querySelector("[data-hv-start]");
       if (starter) {
         starter.addEventListener("submit", function (e) {
           e.preventDefault();
-          var from = starter.querySelector('input[name="address"]');
-          var to = wizard.querySelector("#hv-address");
-          if (from && to && from.value.trim()) to.value = from.value.trim();
 
-          /* Focus the first field the visitor still has to fill: if they
-             already typed an address, skip past it rather than landing on
-             a box they just completed. */
-          var focusOn = (to && !to.value) ? to : wizard.querySelector("#hv-city");
+          HERO_CARRY.forEach(function (pair) {
+            var from = starter.querySelector('[name="' + pair[0] + '"]');
+            var to = wizard.querySelector(pair[1]);
+            if (!from || !to) return;
+            var v = (from.value || "").trim();
+            if (!v) return;
+            /* A <select> only takes a value it has an option for. The hero
+               offers ranges the wizard's free-text fields accept happily,
+               but never assume that holds in the other direction. */
+            if (to.tagName === "SELECT") {
+              var ok = Array.prototype.some.call(to.options, function (o) {
+                return o.value === v || o.text === v;
+              });
+              if (!ok) return;
+            }
+            to.value = v;
+          });
+
+          /* Land on the first question still unanswered rather than at the
+             top of a form they have already half filled in. */
+          var focusOn = null;
+          var probe = ["#hv-address", "#hv-city", "#hv-zip", "#hv-sqft", "#hv-beds", "#hv-baths"];
+          for (var pi = 0; pi < probe.length; pi++) {
+            var pel = wizard.querySelector(probe[pi]);
+            if (pel && !pel.value) { focusOn = pel; break; }
+          }
+          if (!focusOn) focusOn = wizard.querySelector("#hv-city");
 
           if (hvInDialog) {
             hvDlg.showModal();

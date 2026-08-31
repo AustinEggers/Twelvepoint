@@ -116,18 +116,23 @@
 }
 
 /* ---- the form card ------------------------------------------------- */
-/* Smaller and warmer than the first attempt, which was a big white
-   rectangle with a dark slab inside it. The hierarchy here comes from
-   spacing, type and the gold button — not from boxes inside boxes. */
+/* DARK, not cream. A cream card on a cream page reads as part of the
+   page; a dark one reads as a thing sitting on top of the photograph,
+   which is what it is. It also lets the gold button be the single
+   brightest element on the screen, which is the whole point of the page.
+
+   The gold hairline is what keeps it feeling like TwelvePoint rather
+   than a generic dark modal. */
 .hvx-card {
-  background: var(--paper-warm, #F7F2E9);
-  border: 1px solid color-mix(in srgb, var(--gold) 22%, transparent);
+  background: rgba(20, 19, 16, .93);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--gold) 34%, transparent);
   border-radius: 4px;
-  padding: clamp(1.4rem, 2.2vw, 1.85rem);
-  box-shadow: 0 18px 50px rgba(13, 13, 10, .34), 0 2px 6px rgba(13, 13, 10, .16);
-  color: var(--ink);
+  padding: clamp(1.5rem, 2.4vw, 2rem);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, .5), 0 2px 8px rgba(0, 0, 0, .3);
+  color: var(--paper);
   max-width: 27rem;
-  margin-left: auto;              /* sit to the right of the gap */
+  margin-left: auto;
   width: 100%;
 }
 @media (max-width: 60rem) {
@@ -137,23 +142,21 @@
 .hvx-card__h {
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(1.35rem, 2.1vw, 1.65rem);
+  font-size: clamp(1.35rem, 2.1vw, 1.7rem);
   line-height: 1.15;
-  margin: 0 0 .35rem;
-  color: var(--ink);
+  margin: 0 0 .3rem;
+  color: var(--paper);
 }
 .hvx-card__sub {
-  margin: 0 0 1.4rem;             /* breathing room before the field */
+  margin: 0 0 1.3rem;
   font-size: .9rem;
-  color: var(--stone-dim);
+  color: color-mix(in srgb, var(--stone) 90%, transparent);
 }
 
 /* ---- neutralise the shared .hv-start box --------------------------- */
-/* site.css styles .hv-start as a dark translucent slab, because it was
-   built to sit straight on the hero photograph. Dropped inside a cream
-   card it reads as a heavy grey rectangle — a form inside a form.
-   Overridden HERE ONLY, scoped to this card, so the shared rule stays
-   correct wherever else it is used. */
+/* site.css styles .hv-start as its own bordered slab. Inside this card
+   that is a box within a box. Overridden HERE ONLY, scoped to .hvx-card,
+   so the shared rule stays correct wherever else it is used. */
 .hvx-card .hv-start {
   margin: 0;
   max-width: none;
@@ -161,56 +164,63 @@
   border: 0;
   background: none;
   backdrop-filter: none;
+  display: grid;
+  gap: .85rem;
 }
 
-.hvx-card .hv-start__label,
+.hvx-f { display: block; }
+.hvx-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
 .hvx-card label {
   display: block;
   font-family: var(--data);
-  font-size: .68rem;
+  font-size: .66rem;
   font-weight: 500;
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--stone-dim);
-  margin-bottom: .45rem;
+  color: color-mix(in srgb, var(--gold-pale) 82%, transparent);
+  margin-bottom: .4rem;
 }
 
-/* Button under the input, not beside it. The shared rule goes
-   side-by-side above 34rem, which halves the width of both. */
-.hvx-card .hv-start__row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: .6rem;
-}
-
-.hvx-card .hv-start input,
-.hvx-card input[type="text"] {
+/* White fields against the dark card. High contrast, unmistakably
+   interactive, and large enough to tap without aiming. */
+.hvx-card .hv-start input[type="text"],
+.hvx-card .hv-start select {
   width: 100%;
-  padding: .9rem 1rem;
+  padding: .85rem .9rem;
   font-family: var(--body);
-  font-size: 1rem;
+  font-size: .98rem;
   color: var(--ink);
-  background: #FFFDF9;
-  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
-  border-radius: 3px;
-  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+  background: #FFFFFF;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  appearance: none;
+  transition: box-shadow .2s var(--ease);
 }
-.hvx-card .hv-start input::placeholder { color: color-mix(in srgb, var(--stone-dim) 80%, transparent); }
+/* The arrow disappears with appearance:none, so it is drawn back. */
+.hvx-card .hv-start select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23545c66' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .7rem center;
+  background-size: 18px;
+  padding-right: 2.2rem;
+}
+.hvx-card .hv-start input::placeholder { color: #8A8F98; }
 .hvx-card .hv-start input:focus-visible,
-.hvx-card input[type="text"]:focus-visible {
+.hvx-card .hv-start select:focus-visible {
   outline: none;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 20%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 55%, transparent);
 }
 
-/* The strongest thing on the hero, deliberately. */
+/* The brightest thing on the screen, deliberately. */
 .hvx-card .btn {
   width: 100%;
   justify-content: center;
   white-space: nowrap;
-  padding-block: .9rem;
-  border-radius: 3px;
-  letter-spacing: .12em;
+  margin-top: .35rem;
+  padding-block: .95rem;
+  border-radius: 4px;
+  letter-spacing: .14em;
 }
 
 .hvx-card__note {
@@ -218,9 +228,9 @@
   align-items: center;
   justify-content: center;
   gap: .35rem;
-  margin: .9rem 0 0;
-  font-size: .76rem;
-  color: var(--stone-dim);
+  margin: 1rem 0 0;
+  font-size: .75rem;
+  color: color-mix(in srgb, var(--stone) 85%, transparent);
 }
 .hvx-card__note svg {
   width: 12px; height: 12px;
