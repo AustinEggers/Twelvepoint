@@ -124,12 +124,50 @@
          the room, and a search squeezed into body-text width feels cramped. -->
     <div class="wrap wrap--wide mt-l">
       <div id="idx-search">
-        <!-- ▼▼▼  IDX EMBED GOES HERE  ▼▼▼ -->
-        <div class="idxslot">
-          <p class="idxslot__label">IDX search</p>
-          <p class="idxslot__note">Paste your provider&rsquo;s embed into <code>#idx-search</code> and delete this block.</p>
-        </div>
-        <!-- ▲▲▲  IDX EMBED GOES HERE  ▲▲▲ -->
+
+        <!-- ==============================================================
+             HAR AWS IDX — cid 674320
+
+             This is HAR's "Agent Web Site" search, embedded as an iframe.
+             It is a whole page of theirs inside a frame of ours, which has
+             consequences worth knowing rather than discovering:
+
+             • IT CANNOT AUTO-SIZE. The frame is cross-origin, so we cannot
+               read its content height and it cannot tell us. The height
+               below is a deliberate over-estimate: too tall leaves white
+               space, too short traps every result in a tiny inner
+               scrollbar. Over-estimating is the kinder mistake.
+
+             • HAR RUNS BOT PROTECTION and appears to gate by referring
+               domain. If this renders blank, that is the first thing to
+               check with them — the site's live domain probably has to be
+               registered against the account.
+
+             • GEOLOCATION IS OFF SITE-WIDE. vercel.json sends
+               Permissions-Policy: geolocation=(), which also disables it
+               inside this frame. If HAR offers a "search near me", it will
+               fail quietly until that header allows self.
+
+             • SEO. Nothing inside this frame is indexed as our content —
+               it belongs to har.com. That is fine, and it is also why the
+               duplicate-content problem that plagues script-based IDX
+               does not apply here. This page keeps its own canonical.
+             ============================================================== -->
+        <iframe
+          class="idxframe"
+          src="https://www.har.com/idx/mls/search?sitetype=aws&amp;cid=674320&amp;allmls=y&amp;for_sale=1"
+          title="Search the Houston MLS"
+          loading="eager"
+          referrerpolicy="strict-origin-when-cross-origin"></iframe>
+
+        <!-- If the frame is blocked or blank, this is the way through.
+             A visitor should never hit a dead rectangle. -->
+        <p class="idxfallback">
+          Search not loading?
+          <a class="textlink" target="_blank" rel="noopener"
+             href="https://www.har.com/idx/mls/search?sitetype=aws&amp;cid=674320&amp;allmls=y&amp;for_sale=1">Open
+          the full MLS search in a new tab</a>.
+        </p>
       </div>
     </div>
   </section>
