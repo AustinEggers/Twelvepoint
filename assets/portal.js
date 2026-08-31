@@ -219,7 +219,7 @@
                whether an email is registered. */
             var m = (err && err.message) || "";
             say(/confirm/i.test(m) ? "Check your email and confirm your account first."
-              : /rate|too many/i.test(m) ? "Too many attempts. Wait a minute and try again."
+              : /rate|too many|limit/i.test(m) ? "Too many sign-in attempts. Wait a minute and try again."
               : "That email and password do not match an account.", "err");
             release();
           });
@@ -373,8 +373,14 @@
         }).catch(function (err) {
           var m = (err && err.message) || "";
           if (sBtn) { sBtn.disabled = false; sBtn.innerHTML = sLabel; }
+          /* "Too many attempts" was wrong and sent people looking in the
+             wrong place. Supabase counts CONFIRMATION EMAILS SENT across
+             the whole project, not attempts by this visitor — so a first
+             signup fails if a couple of password resets went out earlier
+             in the hour. Name the real cause. */
           sSay(/password/i.test(m) ? "That password was rejected — try a longer one."
-             : /rate|too many/i.test(m) ? "Too many attempts. Wait a minute and try again."
+             : /rate|too many|limit/i.test(m)
+                 ? "Our email service has hit its hourly limit, so the confirmation could not be sent. This is on us, not you — try again in an hour, or call 713-828-4185 and we will set the account up."
              : "That did not work. Check the address and try again.", "err");
         });
       });
