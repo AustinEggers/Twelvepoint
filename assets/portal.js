@@ -99,6 +99,47 @@
     return null;
   }
 
+  /* MUST MIRROR THE RULES IN middleware.js. This is a convenience, not a
+     control — the edge gate and RLS are what actually enforce access. Its
+     only job is to stop us sending someone somewhere we already know they
+     will be turned away from.
+
+     Without it a signed-in client who opens an agent URL loops forever:
+     the gate bounces them to the login page with ?next= pointing at the
+     forbidden page, they sign in, we obey next, the gate bounces them
+     again, and nothing on screen ever explains why. */
+  var GATE = [
+    { prefix: "/portal/agent/",  roles: ["agent", "admin"] },
+    { prefix: "/portal/client/", roles: ["client", "agent", "admin"] }
+  ];
+
+  function canReach(path, role) {
+    if (!path) return false;
+    for (var i = 0; i < GATE.length; i++) {
+      if (path.indexOf(GATE[i].prefix) === 0) return GATE[i].roles.indexOf(role) !== -1;
+    }
+    if (path.indexOf("/portal/") === 0) {
+      return ["client", "agent", "admin"].indexOf(role) !== -1;
+    }
+    return true;                       /* anywhere outside the portal */
+  }
+
+  /* Where to send someone after a successful sign-in: the page they were
+     trying to reach when that is open to them, otherwise their own home. */
+  function destFor(session, next) {
+    var role = roleOf(session);
+    if (next && canReach(next, role)) return next;
+    return homeFor(session);
+  }
+
+  /* Why the gate turned someone away, in words. The reason arrives as a
+     query parameter from middleware.js. */
+  var WHY = {
+    expired: "Your session expired. Sign in again to carry on.",
+    role: "That page belongs to a different kind of account. Sign in with the right one, or use the portal below.",
+    unconfigured: "The portal is not configured on the server yet. Nobody can sign in until that is fixed — this is not your account."
+  };
+
   /* ================================================================== */
   /* login page                                                          */
   /* ================================================================== */
@@ -106,8 +147,32 @@
     var forms = $$("[data-portal-login]");
     if (!forms.length) return;
 
-    var next = new URLSearchParams(location.search).get("next");
+    var params = new URLSearchParams(location.search);
+    var next = params.get("next");
+    /* Only same-origin absolute paths. "//evil.com" is a protocol-relative
+       URL, not a path, and must never survive this check. */
     if (!next || next.charAt(0) !== "/" || next.slice(0, 2) === "//") next = null;
+
+    /* Say why the gate sent them here, and if they are ALREADY signed in,
+       send them somewhere they can actually go rather than showing a form
+       they do not need. This is what breaks the bounce loop. */
+    (function greet() {
+      var why = params.get("why");
+      var first = forms[0];
+      var status = first && $("[data-portal-status]", first);
+
+      function note(msg, kind) {
+        if (!status || !msg) return;
+        status.textContent = msg;
+        status.className = "portal__status" + (kind ? " portal__status--" + kind : "");
+        status.hidden = false;
+      }
+
+      /* Message only. Redirecting a signed-in visitor is routeSignedIn's
+         job, reached through onAuthStateChange INITIAL_SESSION — two code
+         paths racing to call location.replace is its own bug. */
+      note(WHY[why], why === "expired" ? "warn" : "err");
+    })();
 
     forms.forEach(function (form) {
       var status = $("[data-portal-status]", form);
@@ -139,7 +204,9 @@
           .then(function (res) {
             if (res.error) throw res.error;
             setCookie(res.data.session.access_token);
-            var dest = next || homeFor(res.data.session);
+            /* destFor, not "next or home": a client who was bounced off an
+               agent page must not be sent straight back into it. */
+            var dest = destFor(res.data.session, next);
             if (!dest) {
               say("You are signed in, but this account has not been given portal access yet. Your agent or the broker needs to grant it.", "warn");
               release();
@@ -321,16 +388,21 @@
        trip to absorb the gap. Without one refresh, a new user's very first
        visit tells them they have no portal access, which is both wrong and
        alarming. One retry, then believe the answer. */
+    /* When the gate turned someone away on role, next points at a page
+       that just rejected them. Obeying it sends them straight back into
+       the bounce. */
+    var safeNext = params.get("why") === "role" ? null : next;
+
     var roleRetried = false;
     function routeSignedIn(session) {
-      var dest = next || homeFor(session);
+      var dest = destFor(session, safeNext);
       if (dest) { location.replace(dest); return; }
 
       if (!roleRetried) {
         roleRetried = true;
         sb.auth.refreshSession().then(function (res) {
           var fresh = res.data && res.data.session;
-          var d = fresh && (next || homeFor(fresh));
+          var d = fresh && destFor(fresh, safeNext);
           if (d) { setCookie(fresh.access_token); location.replace(d); return; }
           noRole();
         }, noRole);
