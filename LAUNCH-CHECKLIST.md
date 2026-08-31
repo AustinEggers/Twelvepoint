@@ -42,6 +42,17 @@ Nothing here is a nice-to-have. The nice-to-haves are not in this file.
 
 ## Wrong information going out
 
+- [ ] **Supabase URL Configuration, at the same moment as the domain.**
+      Authentication → URL Configuration. **Site URL** and the **Redirect
+      URLs** allowlist both currently point at
+      `https://twelvepoint-two.vercel.app`. Every confirmation and
+      password-reset link is built from Site URL, so the day the domain
+      changes and this does not, every one of those emails sends a client
+      to a dead address. Add the new domain BEFORE switching, keep both
+      for a few days, then remove the old one.
+      *Do not use a wildcard host such as `https://*.vercel.app/**` —
+      that lets any site on that domain receive your auth tokens.*
+
 - [ ] **Confirm the live domain and re-run the SEO build.**
       `SITE_URL` at the top of `tools/build-seo.sh` currently assumes
       `https://twelvepointrealty.com`. Every canonical, `og:url`, absolute
