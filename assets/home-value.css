@@ -124,12 +124,14 @@
    The gold hairline is what keeps it feeling like TwelvePoint rather
    than a generic dark modal. */
 .hvx-card {
-  /* Transparent enough that the house reads through it, opaque enough
-     that white text on it never has to compete with whatever happens to
-     be behind. The blur does most of the work: it lets the alpha come
-     down without the photograph turning the text to mush. */
-  background: rgba(20, 19, 16, .84);
-  backdrop-filter: blur(14px) saturate(115%);
+  /* The house reads clearly through this. The BLUR is what makes that
+     safe, not the alpha — 18px turns whatever is behind into colour and
+     shape rather than detail, so nothing competes with the labels.
+
+     .72 is close to the floor. Below about .70 the small grey sub-label
+     is the first thing to suffer, well before the heading does. */
+  background: rgba(20, 19, 16, .72);
+  backdrop-filter: blur(18px) saturate(120%);
   border: 1px solid color-mix(in srgb, var(--gold) 34%, transparent);
   border-radius: 4px;
   padding: clamp(1.5rem, 2.4vw, 2rem);
@@ -154,7 +156,9 @@
 .hvx-card__sub {
   margin: 0 0 1.3rem;
   font-size: .9rem;
-  color: color-mix(in srgb, var(--stone) 90%, transparent);
+  /* Lifted a step now the card is more transparent — this is the first
+     text that would go, so it gets the margin rather than the heading. */
+  color: color-mix(in srgb, var(--stone) 100%, transparent);
 }
 
 /* ---- neutralise the shared .hv-start box --------------------------- */
